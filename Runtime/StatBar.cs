@@ -47,9 +47,9 @@ namespace Visage.Runtime
 
         [Serializable]
         /// <summary>
-        /// Event type used by the UI.Slider.
+        /// Event type used by the StatBar.
         /// </summary>
-        public class SliderEvent : UnityEvent<float> { }
+        public class StatBarEvent : UnityEvent<float> { }
 
         [SerializeField]
         private RectTransform m_FillRect;
@@ -306,7 +306,7 @@ namespace Visage.Runtime
         [Space]
 
         [SerializeField]
-        private SliderEvent m_OnValueChanged = new SliderEvent();
+        private StatBarEvent m_OnValueChanged = new StatBarEvent();
 
         /// <summary>
         /// Callback executed when the value of the slider is changed.
@@ -335,7 +335,7 @@ namespace Visage.Runtime
         /// }
         /// </code>
         /// </example>
-        public SliderEvent onValueChanged { get { return m_OnValueChanged; } set { m_OnValueChanged = value; } }
+        public StatBarEvent onValueChanged { get { return m_OnValueChanged; } set { m_OnValueChanged = value; } }
 
         // Private fields
 

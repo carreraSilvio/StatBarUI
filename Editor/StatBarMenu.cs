@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Visage.Runtime;
+using CGTespy.UI;
 
 namespace Visage.Editor
 {
@@ -45,16 +46,30 @@ namespace Visage.Editor
             void CreateBar()
             {
                 // Create a custom game object
-                GameObject go = new GameObject("Bar");
+                GameObject go = new GameObject("StatBar");
                 go.AddComponent<StatBar>();
+                go.GetComponent<RectTransform>().sizeDelta = new Vector2(160, 20);
+
                 // Ensure it gets reparented if this was a context click (otherwise does nothing)
                 GameObjectUtility.SetParentAndAlign(go, canvas.gameObject);
                 // Register the creation in the undo system
                 Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
                 Selection.activeObject = go;
 
-                //Add main scripts
-                
+                CreateBackground();
+                void CreateBackground()
+                {
+                    GameObject background = new GameObject("Background");
+                    background.AddComponent<Image>();
+                    background.transform.SetParent(go.transform);
+                    //GameObjectUtility.SetParentAndAlign(background, go);
+                    RectTransform childRect = background.GetComponent<RectTransform>();
+                    childRect.ApplyAnchorPreset(TextAnchor.UpperCenter, true, true);
+                        //childRect.size
+                    //childRect.anchorMin = new Vector2(0.5f, 0.5f);
+                    //childRect.anchorMax = new Vector2(0.5f, 0.5f);
+                    //childRect.pivot = new Vector2(0.5f, 0.5f);
+                }
             }
         }
 
