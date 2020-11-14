@@ -1,5 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public sealed class UIBarMenu
 {
@@ -16,18 +18,52 @@ public sealed class UIBarMenu
     // Add a menu item to create custom GameObjects.
     // Priority 1 ensures it is grouped with the other menu items of the same kind
     // and propagated to the hierarchy dropdown and hierarchy context menus.
-    [MenuItem("GameObject/UI/Bar", false, 70)]
+    [MenuItem("GameObject/UI/Game/StatBar", false, 70)]
     static void CreateCustomGameObject(MenuCommand menuCommand)
     {
-        // Create a custom game object
-        GameObject go = new GameObject("Bar");
-        go.AddComponent<UIBar>();
-        go.AddComponent<RectTransform>();
-        // Ensure it gets reparented if this was a context click (otherwise does nothing)
-        GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
-        // Register the creation in the undo system
-        Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
-        Selection.activeObject = go;
+        Canvas canvas;
+        FindOrCreateCanvas();
+        FindOrCreateEventSystem();
+        CreateMenu();
+
+
+
+        void FindOrCreateCanvas()
+        {
+            canvas = GameObject.FindObjectOfType<Canvas>();
+            if (canvas == null)
+            {
+                var go = new GameObject("Canvas");
+                canvas = go.AddComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                go.AddComponent<CanvasScaler>();
+                go.AddComponent<GraphicRaycaster>();
+                GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
+            }
+        }
+        void FindOrCreateEventSystem()
+        {
+            var eventSystem = GameObject.FindObjectOfType<EventSystem>();
+            if (eventSystem == null)
+            {
+                var go = new GameObject("EventSystem");
+                go.AddComponent<EventSystem>();
+                go.AddComponent<StandaloneInputModule>();
+            }
+        }
+        void CreateMenu()
+        {
+            // Create a custom game object
+            GameObject go = new GameObject("Bar");
+            go.AddComponent<UIBar>();
+            go.AddComponent<RectTransform>();
+            //go.transform.SetParent(canvas.transform);
+            // Ensure it gets reparented if this was a context click (otherwise does nothing)
+            GameObjectUtility.SetParentAndAlign(go, canvas.gameObject);
+            // Register the creation in the undo system
+            Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
+            Selection.activeObject = go;
+        }
     }
 
     // Add a menu item called "Double Mass" to a Rigidbody's context menu.
