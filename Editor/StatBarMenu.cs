@@ -46,7 +46,6 @@ namespace Visage.Editor
             {
                 // Create a custom game object
                 GameObject go = new GameObject("Bar");
-                go.AddComponent<RectTransform>();
                 go.AddComponent<StatBar>();
                 // Ensure it gets reparented if this was a context click (otherwise does nothing)
                 GameObjectUtility.SetParentAndAlign(go, canvas.gameObject);
@@ -68,4 +67,5 @@ namespace Visage.Editor
             Debug.Log("Doubled Rigidbody's Mass to " + body.mass + " from Context Menu.");
         }
     }
+    
 }
