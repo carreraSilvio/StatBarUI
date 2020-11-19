@@ -17,7 +17,20 @@ namespace Visage.Editor
             Canvas canvas;
             FindOrCreateCanvas();
             FindOrCreateEventSystem();
+
+            GameObject statBarHolder;
+            StatBar statBar;
+            GameObject fillArea;
+            GameObject fill;
+
             CreateBar();
+            CreateBackground();
+            CreateFillArea();
+            CreateFill();
+
+            statBar.fillRect = fill.GetComponent<RectTransform>();
+            statBar.value = statBar.maxValue;
+            
 
             #region Locals
             void FindOrCreateCanvas()
@@ -46,40 +59,108 @@ namespace Visage.Editor
             void CreateBar()
             {
                 // Create and set the statBar size
-                var statBar = new GameObject("StatBar");
-                statBar.AddComponent<StatBar>();
-                var statBarRect = statBar.GetComponent<RectTransform>();
+                statBarHolder = new GameObject("StatBar");
+                statBar = statBarHolder.AddComponent<StatBar>();
+                var statBarRect = statBarHolder.GetComponent<RectTransform>();
                 statBarRect.sizeDelta = new Vector2(160, 20);
+                statBar.transition = Selectable.Transition.None;
+                //statBar.navigation.mode = Navigation.Mode.None;
+                statBar.interactable = false;
 
                 // Ensure it gets reparented if this was a context click (otherwise does nothing)
-                GameObjectUtility.SetParentAndAlign(statBar, canvas.gameObject);
+                GameObjectUtility.SetParentAndAlign(statBarHolder, canvas.gameObject);
 
                 // Register the creation in the undo system
-                Undo.RegisterCreatedObjectUndo(statBar, "Create " + statBar.name);
-                Selection.activeObject = statBar;
+                Undo.RegisterCreatedObjectUndo(statBarHolder, "Create " + statBarHolder.name);
+                Selection.activeObject = statBarHolder;
+            }
+            void CreateBackground()
+            {
+                var bg = new GameObject("Background");
+                var img = bg.AddComponent<Image>();
+                img.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
+                img.type = Image.Type.Sliced;
+                img.SetNativeSize();
 
-                CreateBackground();
-                void CreateBackground()
-                {
-                    var bg = new GameObject("Background");
-                    bg.AddComponent<Image>();
-                    GameObjectUtility.SetParentAndAlign(bg, statBar.gameObject);
+                GameObjectUtility.SetParentAndAlign(bg, statBarHolder);
+                MatchParentSize(bg, false, true);
+                Stretch(bg, true, false);
+            }
+            void CreateFillArea()
+            {
+                fillArea = new GameObject("Fill Area");
+                fillArea.AddComponent<RectTransform>();
 
-                    //Make the bg extend horizontal and centralize
-                    var bgRect = bg.GetComponent<RectTransform>();
-                    bgRect.anchorMin = new Vector2(0f, 0.5f);
-                    bgRect.anchorMax = new Vector2(1f, 0.5f);
-                    bgRect.pivot = new Vector2(0.5f, 0.5f);
+                GameObjectUtility.SetParentAndAlign(fillArea, statBarHolder);
+                MatchParentSize(fillArea, false, true);
+                Stretch(fillArea, true, false);
+            }
+            void CreateFill()
+            {
+                fill = new GameObject("Fill");
+                fill.AddComponent<RectTransform>();
+                var img = fill.AddComponent<Image>();
+                img.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+                img.type = Image.Type.Sliced;
+                img.SetNativeSize();
 
-                    //Match bg height with parent height
-                    bgRect.sizeDelta = new Vector2(bgRect.sizeDelta.x, statBarRect.sizeDelta.y);
-
-                    //Adjust Left and Right values to 0
-                    bgRect.offsetMin = new Vector2(0f, bgRect.offsetMin.y); //offsetMin.x => "Left" value
-                    bgRect.offsetMax = new Vector2(0f, bgRect.offsetMax.y); //offsetMax.x => "Right" value
-                }
-            } 
+                GameObjectUtility.SetParentAndAlign(fill, fillArea.gameObject);
+                Stretch(fill, true, true);
+            }
             #endregion
         }
+
+        /// <summary>
+        /// Match child width or height with its parent's.
+        /// </summary>
+        /// <remarks>It won't stretch. For that, see <see cref="Stretch"/></remarks>
+        private static void MatchParentSize(GameObject child, bool width, bool height)
+        {
+            var parentRect = child.transform.parent.GetComponent<RectTransform>();
+            var childRect = child.GetComponent<RectTransform>();
+
+            childRect.sizeDelta = new Vector2(
+                width ? parentRect.sizeDelta.x : childRect.sizeDelta.x, 
+                height ? parentRect.sizeDelta.y : childRect.sizeDelta.y);
+        }
+
+        /// <summary>
+        /// Make the child stretch to match the parent size
+        /// </summary>
+        private static void Stretch(GameObject child, bool horizontal, bool vertical)
+        {
+            (float min, float max) streteched = (0f, 1f);
+            (float min, float max) nonStreteched = (0.5f, 0.5f);
+
+            //Make the child extend horizontal/vertical and centralize
+            var childRect = child.GetComponent<RectTransform>();
+            childRect.anchorMin = new Vector2(
+                horizontal ? streteched.min : nonStreteched.min,
+                vertical ? streteched.min : nonStreteched.min
+                );
+            childRect.anchorMax = new Vector2(
+                horizontal ? streteched.max : nonStreteched.max,
+                vertical ? streteched.max : nonStreteched.max
+                );
+            childRect.pivot = new Vector2(0.5f, 0.5f);
+
+            //Adjust left and/or bot values
+            childRect.offsetMin = new Vector2(
+                horizontal ? 0f : childRect.offsetMin.x, //Left
+                vertical ? 0f : childRect.offsetMin.y    //Bot
+                );
+
+            //Adjust right and/or top values
+            childRect.offsetMax = new Vector2(
+                horizontal ? 0f : childRect.offsetMax.x, //Left
+                vertical ? 0f : childRect.offsetMax.y    //Top
+                );
+
+            //Left rectTransform.offsetMin.x;
+            //Right rectTransform.offsetMax.x;
+            //Top rectTransform.offsetMax.y;
+            //Bottom rectTransform.offsetMin.y;
+        }
+
     }
 }
