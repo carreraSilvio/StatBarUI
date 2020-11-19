@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Visage.Runtime;
-using CGTespy.UI;
 
 namespace Visage.Editor
 {
@@ -20,6 +19,7 @@ namespace Visage.Editor
             FindOrCreateEventSystem();
             CreateBar();
 
+            #region Locals
             void FindOrCreateCanvas()
             {
                 canvas = Object.FindObjectOfType<Canvas>();
@@ -64,13 +64,13 @@ namespace Visage.Editor
                     var bg = new GameObject("Background");
                     bg.AddComponent<Image>();
                     GameObjectUtility.SetParentAndAlign(bg, statBar.gameObject);
-                    
+
                     //Make the bg extend horizontal and centralize
                     var bgRect = bg.GetComponent<RectTransform>();
                     bgRect.anchorMin = new Vector2(0f, 0.5f);
                     bgRect.anchorMax = new Vector2(1f, 0.5f);
                     bgRect.pivot = new Vector2(0.5f, 0.5f);
-                    
+
                     //Match bg height with parent height
                     bgRect.sizeDelta = new Vector2(bgRect.sizeDelta.x, statBarRect.sizeDelta.y);
 
@@ -78,17 +78,8 @@ namespace Visage.Editor
                     bgRect.offsetMin = new Vector2(0f, bgRect.offsetMin.y); //offsetMin.x => "Left" value
                     bgRect.offsetMax = new Vector2(0f, bgRect.offsetMax.y); //offsetMax.x => "Right" value
                 }
-            }
-        }
-
-        // Add a menu item called "Double Mass" to a Rigidbody's context menu.
-        [MenuItem("CONTEXT/Rigidbody/Double Mass")]
-        static void DoubleMass(MenuCommand command)
-        {
-            Rigidbody body = (Rigidbody)command.context;
-            body.mass = body.mass * 2;
-            Debug.Log("Doubled Rigidbody's Mass to " + body.mass + " from Context Menu.");
+            } 
+            #endregion
         }
     }
-    
 }
