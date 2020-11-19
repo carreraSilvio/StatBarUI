@@ -45,30 +45,38 @@ namespace Visage.Editor
             }
             void CreateBar()
             {
-                // Create a custom game object
-                GameObject go = new GameObject("StatBar");
-                go.AddComponent<StatBar>();
-                go.GetComponent<RectTransform>().sizeDelta = new Vector2(160, 20);
+                // Create and set the statBar size
+                var statBar = new GameObject("StatBar");
+                statBar.AddComponent<StatBar>();
+                var statBarRect = statBar.GetComponent<RectTransform>();
+                statBarRect.sizeDelta = new Vector2(160, 20);
 
                 // Ensure it gets reparented if this was a context click (otherwise does nothing)
-                GameObjectUtility.SetParentAndAlign(go, canvas.gameObject);
+                GameObjectUtility.SetParentAndAlign(statBar, canvas.gameObject);
+
                 // Register the creation in the undo system
-                Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
-                Selection.activeObject = go;
+                Undo.RegisterCreatedObjectUndo(statBar, "Create " + statBar.name);
+                Selection.activeObject = statBar;
 
                 CreateBackground();
                 void CreateBackground()
                 {
-                    GameObject background = new GameObject("Background");
-                    background.AddComponent<Image>();
-                    background.transform.SetParent(go.transform);
-                    //GameObjectUtility.SetParentAndAlign(background, go);
-                    RectTransform childRect = background.GetComponent<RectTransform>();
-                    childRect.ApplyAnchorPreset(TextAnchor.UpperCenter, true, true);
-                        //childRect.size
-                    //childRect.anchorMin = new Vector2(0.5f, 0.5f);
-                    //childRect.anchorMax = new Vector2(0.5f, 0.5f);
-                    //childRect.pivot = new Vector2(0.5f, 0.5f);
+                    var bg = new GameObject("Background");
+                    bg.AddComponent<Image>();
+                    GameObjectUtility.SetParentAndAlign(bg, statBar.gameObject);
+                    
+                    //Make the bg extend horizontal and centralize
+                    var bgRect = bg.GetComponent<RectTransform>();
+                    bgRect.anchorMin = new Vector2(0f, 0.5f);
+                    bgRect.anchorMax = new Vector2(1f, 0.5f);
+                    bgRect.pivot = new Vector2(0.5f, 0.5f);
+                    
+                    //Match bg height with parent height
+                    bgRect.sizeDelta = new Vector2(bgRect.sizeDelta.x, statBarRect.sizeDelta.y);
+
+                    //Adjust Left and Right values to 0
+                    bgRect.offsetMin = new Vector2(0f, bgRect.offsetMin.y); //offsetMin.x => "Left" value
+                    bgRect.offsetMax = new Vector2(0f, bgRect.offsetMax.y); //offsetMax.x => "Right" value
                 }
             }
         }
