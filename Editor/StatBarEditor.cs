@@ -14,7 +14,6 @@ namespace Visage.Editor
     {
         SerializedProperty m_Direction;
         SerializedProperty m_FillRect;
-        SerializedProperty m_HandleRect;
         SerializedProperty m_MinValue;
         SerializedProperty m_MaxValue;
         SerializedProperty m_WholeNumbers;
@@ -24,7 +23,6 @@ namespace Visage.Editor
         protected void OnEnable()
         {
             m_FillRect = serializedObject.FindProperty("m_FillRect");
-            m_HandleRect = serializedObject.FindProperty("m_HandleRect");
             m_Direction = serializedObject.FindProperty("m_Direction");
             m_MinValue = serializedObject.FindProperty("m_MinValue");
             m_MaxValue = serializedObject.FindProperty("m_MaxValue");
@@ -35,14 +33,11 @@ namespace Visage.Editor
 
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.Space();
-
             serializedObject.Update();
 
             EditorGUILayout.PropertyField(m_FillRect);
-            EditorGUILayout.PropertyField(m_HandleRect);
 
-            if (m_FillRect.objectReferenceValue != null || m_HandleRect.objectReferenceValue != null)
+            if (m_FillRect.objectReferenceValue != null)
             {
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(m_Direction);
@@ -61,15 +56,13 @@ namespace Visage.Editor
                 EditorGUILayout.PropertyField(m_WholeNumbers);
                 EditorGUILayout.Slider(m_Value, m_MinValue.floatValue, m_MaxValue.floatValue);
 
-               
-
                 // Draw the event notification options
                 EditorGUILayout.Space();
                 EditorGUILayout.PropertyField(m_OnValueChanged);
             }
             else
             {
-                EditorGUILayout.HelpBox("Specify a RectTransform for the slider fill or the slider handle or both. Each must have a parent RectTransform that it can slide within.", MessageType.Info);
+                EditorGUILayout.HelpBox("Specify a RectTransform for the stat bar to fill. It must have a parent RectTransform that it can slide within.", MessageType.Info);
             }
 
             serializedObject.ApplyModifiedProperties();
