@@ -102,6 +102,7 @@ namespace Visage.Editor
                 var img = fill.AddComponent<Image>();
                 img.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
                 img.type = Image.Type.Sliced;
+                img.color = Color.red;
                 img.SetNativeSize();
 
                 GameObjectUtility.SetParentAndAlign(fill, fillArea.gameObject);
