@@ -17,7 +17,7 @@ namespace Visage.Runtime
     /// The anchors of the fill and handle RectTransforms are driven by the Slider. The fill and handle can be direct children of the GameObject with the Slider, or intermediary RectTransforms can be placed in between for additional control.
     /// When a change to the slider value occurs, a callback is sent to any registered listeners of UI.Slider.onValueChanged.
     /// </remarks>
-    public class StatBar : Selectable, ICanvasElement
+    public class StatBar : UIBehaviour, ICanvasElement
     { 
         /// <summary>
         /// Setting that indicates one of four directions.
@@ -600,108 +600,6 @@ namespace Visage.Runtime
             }
         }
 
-        private bool MayDrag(PointerEventData eventData)
-        {
-            return IsActive() && IsInteractable() && eventData.button == PointerEventData.InputButton.Left;
-        }
-
-        public override void OnPointerDown(PointerEventData eventData)
-        {
-            if (!MayDrag(eventData))
-                return;
-
-            base.OnPointerDown(eventData);
-
-            m_Offset = Vector2.zero;
-            if (m_HandleContainerRect != null && RectTransformUtility.RectangleContainsScreenPoint(m_HandleRect, eventData.position, eventData.enterEventCamera))
-            {
-                Vector2 localMousePos;
-                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(m_HandleRect, eventData.position, eventData.pressEventCamera, out localMousePos))
-                    m_Offset = localMousePos;
-            }
-            else
-            {
-                // Outside the slider handle - jump to this point instead
-                UpdateDrag(eventData, eventData.pressEventCamera);
-            }
-        }
-
-        public override void OnMove(AxisEventData eventData)
-        {
-            if (!IsActive() || !IsInteractable())
-            {
-                base.OnMove(eventData);
-                return;
-            }
-
-            switch (eventData.moveDir)
-            {
-                case MoveDirection.Left:
-                    if (axis == Axis.Horizontal && FindSelectableOnLeft() == null)
-                        Set(reverseValue ? value + stepSize : value - stepSize);
-                    else
-                        base.OnMove(eventData);
-                    break;
-                case MoveDirection.Right:
-                    if (axis == Axis.Horizontal && FindSelectableOnRight() == null)
-                        Set(reverseValue ? value - stepSize : value + stepSize);
-                    else
-                        base.OnMove(eventData);
-                    break;
-                case MoveDirection.Up:
-                    if (axis == Axis.Vertical && FindSelectableOnUp() == null)
-                        Set(reverseValue ? value - stepSize : value + stepSize);
-                    else
-                        base.OnMove(eventData);
-                    break;
-                case MoveDirection.Down:
-                    if (axis == Axis.Vertical && FindSelectableOnDown() == null)
-                        Set(reverseValue ? value + stepSize : value - stepSize);
-                    else
-                        base.OnMove(eventData);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// See Selectable.FindSelectableOnLeft
-        /// </summary>
-        public override Selectable FindSelectableOnLeft()
-        {
-            if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Horizontal)
-                return null;
-            return base.FindSelectableOnLeft();
-        }
-
-        /// <summary>
-        /// See Selectable.FindSelectableOnRight
-        /// </summary>
-        public override Selectable FindSelectableOnRight()
-        {
-            if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Horizontal)
-                return null;
-            return base.FindSelectableOnRight();
-        }
-
-        /// <summary>
-        /// See Selectable.FindSelectableOnUp
-        /// </summary>
-        public override Selectable FindSelectableOnUp()
-        {
-            if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Vertical)
-                return null;
-            return base.FindSelectableOnUp();
-        }
-
-        /// <summary>
-        /// See Selectable.FindSelectableOnDown
-        /// </summary>
-        public override Selectable FindSelectableOnDown()
-        {
-            if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Vertical)
-                return null;
-            return base.FindSelectableOnDown();
-        }
 
         /// <summary>
         /// Sets the direction of this slider, optionally changing the layout as well.

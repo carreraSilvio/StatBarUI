@@ -63,9 +63,6 @@ namespace Visage.Editor
                 statBar = statBarHolder.AddComponent<StatBar>();
                 var statBarRect = statBarHolder.GetComponent<RectTransform>();
                 statBarRect.sizeDelta = new Vector2(160, 20);
-                statBar.transition = Selectable.Transition.None;
-                //statBar.navigation.mode = Navigation.Mode.None;
-                statBar.interactable = false;
 
                 // Ensure it gets reparented if this was a context click (otherwise does nothing)
                 GameObjectUtility.SetParentAndAlign(statBarHolder, canvas.gameObject);

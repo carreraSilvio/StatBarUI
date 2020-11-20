@@ -10,7 +10,7 @@ namespace Visage.Editor
     /// <summary>
     /// Custom Editor for the StatBar Component.
     /// </summary>
-    public class StatBarEditor : SelectableEditor
+    public class StatBarEditor : UnityEditor.Editor
     {
         SerializedProperty m_Direction;
         SerializedProperty m_FillRect;
@@ -21,9 +21,8 @@ namespace Visage.Editor
         SerializedProperty m_Value;
         SerializedProperty m_OnValueChanged;
 
-        protected override void OnEnable()
+        protected void OnEnable()
         {
-            base.OnEnable();
             m_FillRect = serializedObject.FindProperty("m_FillRect");
             m_HandleRect = serializedObject.FindProperty("m_HandleRect");
             m_Direction = serializedObject.FindProperty("m_Direction");
@@ -36,7 +35,6 @@ namespace Visage.Editor
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
             EditorGUILayout.Space();
 
             serializedObject.Update();
@@ -63,19 +61,7 @@ namespace Visage.Editor
                 EditorGUILayout.PropertyField(m_WholeNumbers);
                 EditorGUILayout.Slider(m_Value, m_MinValue.floatValue, m_MaxValue.floatValue);
 
-                bool warning = false;
-                foreach (var obj in serializedObject.targetObjects)
-                {
-                    StatBar statBar = obj as StatBar;
-                    StatBar.Direction dir = statBar.direction;
-                    if (dir == StatBar.Direction.LeftToRight || dir == StatBar.Direction.RightToLeft)
-                        warning = (statBar.navigation.mode != Navigation.Mode.Automatic && (statBar.FindSelectableOnLeft() != null || statBar.FindSelectableOnRight() != null));
-                    else
-                        warning = (statBar.navigation.mode != Navigation.Mode.Automatic && (statBar.FindSelectableOnDown() != null || statBar.FindSelectableOnUp() != null));
-                }
-
-                if (warning)
-                    EditorGUILayout.HelpBox("The selected slider direction conflicts with navigation. Not all navigation options may work.", MessageType.Warning);
+               
 
                 // Draw the event notification options
                 EditorGUILayout.Space();
