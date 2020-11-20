@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-namespace Visage.Runtime
+﻿namespace Visage.Runtime
 {
     /// <summary>
     /// Original code from namespace UnityEngine.UI.SetPropertyUtility

@@ -147,11 +147,7 @@ namespace Visage.Runtime
         // This "delayed" mechanism is required for case 1037681.
         private bool m_DelayedUpdateVisuals = false;
 
-        // Size of each step.
-        private float stepSize { get { return wholeNumbers ? 1 : (maxValue - minValue) * 0.1f; } }
-
-        protected StatBar()
-        { }
+        protected StatBar() { }
 
 #if UNITY_EDITOR
         protected override void OnValidate()
@@ -168,9 +164,9 @@ namespace Visage.Runtime
             if (IsActive())
             {
                 UpdateCachedReferences();
-                Set(m_Value, false);
                 // Update rects in next update since other things might affect them even if value didn't change.
                 m_DelayedUpdateVisuals = true;
+                Set(m_Value, false);
             }
 
             if (!UnityEditor.PrefabUtility.IsPartOfPrefabAsset(this) && !Application.isPlaying)
@@ -294,7 +290,13 @@ namespace Visage.Runtime
                 return;
 
             m_Value = newValue;
-            UpdateVisuals();
+            
+            if (!m_DelayedUpdateVisuals)
+            {
+                Debug.Log("update visuals inside set");
+                UpdateVisuals();
+            }
+
             if (sendCallback)
             {
                 UISystemProfilerApi.AddMarker("StatBar.value", this);
