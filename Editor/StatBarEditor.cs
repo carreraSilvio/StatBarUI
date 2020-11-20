@@ -1,6 +1,4 @@
 ﻿using UnityEditor;
-using UnityEditor.UI;
-using UnityEngine.UI;
 using Visage.Runtime;
 
 namespace Visage.Editor

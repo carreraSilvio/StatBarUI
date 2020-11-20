@@ -10,12 +10,12 @@ namespace Visage.Runtime
     [ExecuteInEditMode]
     [RequireComponent(typeof(RectTransform))]
     /// <summary>
-    /// A standard slider that can be moved between a minimum and maximum value.
+    /// A standard StatBar that can be moved between a minimum and maximum value.
     /// </summary>
     /// <remarks>
-    /// The slider component is a Selectable that controls a fill, a handle, or both. The fill, when used, spans from the minimum value to the current value while the handle, when used, follow the current value.
-    /// The anchors of the fill and handle RectTransforms are driven by the Slider. The fill and handle can be direct children of the GameObject with the Slider, or intermediary RectTransforms can be placed in between for additional control.
-    /// When a change to the slider value occurs, a callback is sent to any registered listeners of UI.Slider.onValueChanged.
+    /// The StatBar component is a Selectable that controls a fill, a handle, or both. The fill, when used, spans from the minimum value to the current value while the handle, when used, follow the current value.
+    /// The anchors of the fill and handle RectTransforms are driven by the StatBar. The fill and handle can be direct children of the GameObject with the StatBar, or intermediary RectTransforms can be placed in between for additional control.
+    /// When a change to the StatBar value occurs, a callback is sent to any registered listeners of UI.StatBar.onValueChanged.
     /// </remarks>
     public class StatBar : UIBehaviour, ICanvasElement
     { 
@@ -55,29 +55,8 @@ namespace Visage.Runtime
         private RectTransform m_FillRect;
 
         /// <summary>
-        /// Optional RectTransform to use as fill for the slider.
+        /// Optional RectTransform to use as fill for the StatBar.
         /// </summary>
-        /// <example>
-        /// <code>
-        /// using UnityEngine;
-        /// using System.Collections;
-        /// using UnityEngine.UI;  // Required when Using UI elements.
-        ///
-        /// public class Example : MonoBehaviour
-        /// {
-        ///     public Slider mainSlider;
-        ///     //Reference to new "RectTransform"(Child of FillArea).
-        ///     public RectTransform newFillRect;
-        ///
-        ///     //Deactivates the old FillRect and assigns a new one.
-        ///     void Start()
-        ///     {
-        ///         mainSlider.fillRect.gameObject.SetActive(false);
-        ///         mainSlider.fillRect = newFillRect;
-        ///     }
-        /// }
-        /// </code>
-        /// </example>
         public RectTransform fillRect { get { return m_FillRect; } set { if (SetPropertyUtility.SetClass(ref m_FillRect, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
 
         [Space]
@@ -86,81 +65,24 @@ namespace Visage.Runtime
         private Direction m_Direction = Direction.LeftToRight;
 
         /// <summary>
-        /// The direction of the slider, from minimum to maximum value.
+        /// The direction of the StatBar, from minimum to maximum value.
         /// </summary>
-        /// <example>
-        /// <code>
-        /// using UnityEngine;
-        /// using System.Collections;
-        /// using UnityEngine.UI; // Required when Using UI elements.
-        ///
-        /// public class Example : MonoBehaviour
-        /// {
-        ///     public Slider mainSlider;
-        ///
-        ///     public void Start()
-        ///     {
-        ///         //Changes the direction of the slider.
-        ///         if (mainSlider.direction == Slider.Direction.BottomToTop)
-        ///         {
-        ///             mainSlider.direction = Slider.Direction.TopToBottom;
-        ///         }
-        ///     }
-        /// }
-        /// </code>
-        /// </example>
         public Direction direction { get { return m_Direction; } set { if (SetPropertyUtility.SetStruct(ref m_Direction, value)) UpdateVisuals(); } }
 
         [SerializeField]
         private float m_MinValue = 0;
 
         /// <summary>
-        /// The minimum allowed value of the slider.
+        /// The minimum allowed value of the StatBar.
         /// </summary>
-        /// <example>
-        /// <code>
-        /// using UnityEngine;
-        /// using System.Collections;
-        /// using UnityEngine.UI; // Required when Using UI elements.
-        ///
-        /// public class Example : MonoBehaviour
-        /// {
-        ///     public Slider mainSlider;
-        ///
-        ///     void Start()
-        ///     {
-        ///         // Changes the minimum value of the slider to 10;
-        ///         mainSlider.minValue = 10;
-        ///     }
-        /// }
-        /// </code>
-        /// </example>
         public float minValue { get { return m_MinValue; } set { if (SetPropertyUtility.SetStruct(ref m_MinValue, value)) { Set(m_Value); UpdateVisuals(); } } }
 
         [SerializeField]
         private float m_MaxValue = 1;
 
         /// <summary>
-        /// The maximum allowed value of the slider.
+        /// The maximum allowed value of the StatBar.
         /// </summary>
-        /// <example>
-        /// <code>
-        /// using UnityEngine;
-        /// using System.Collections;
-        /// using UnityEngine.UI; // Required when Using UI elements.
-        ///
-        /// public class Example : MonoBehaviour
-        /// {
-        ///     public Slider mainSlider;
-        ///
-        ///     void Start()
-        ///     {
-        ///         // Changes the max value of the slider to 20;
-        ///         mainSlider.maxValue = 20;
-        ///     }
-        /// }
-        /// </code>
-        /// </example>
         public float maxValue { get { return m_MaxValue; } set { if (SetPropertyUtility.SetStruct(ref m_MaxValue, value)) { Set(m_Value); UpdateVisuals(); } } }
 
         [SerializeField]
@@ -169,51 +91,14 @@ namespace Visage.Runtime
         /// <summary>
         /// Should the value only be allowed to be whole numbers?
         /// </summary>
-        /// <example>
-        /// <code>
-        /// using UnityEngine;
-        /// using System.Collections;
-        /// using UnityEngine.UI; // Required when Using UI elements.
-        ///
-        /// public class Example : MonoBehaviour
-        /// {
-        ///     public Slider mainSlider;
-        ///
-        ///     public void Start()
-        ///     {
-        ///         //sets the slider's value to accept whole numbers only.
-        ///         mainSlider.wholeNumbers = true;
-        ///     }
-        /// }
-        /// </code>
-        /// </example>
         public bool wholeNumbers { get { return m_WholeNumbers; } set { if (SetPropertyUtility.SetStruct(ref m_WholeNumbers, value)) { Set(m_Value); UpdateVisuals(); } } }
 
         [SerializeField]
         protected float m_Value;
 
         /// <summary>
-        /// The current value of the slider.
+        /// The current value of the StatBar.
         /// </summary>
-        /// <example>
-        /// <code>
-        /// using UnityEngine;
-        /// using System.Collections;
-        /// using UnityEngine.UI; // Required when Using UI elements.
-        ///
-        /// public class Example : MonoBehaviour
-        /// {
-        ///     public Slider mainSlider;
-        ///
-        ///     //Invoked when a submit button is clicked.
-        ///     public void SubmitSliderSetting()
-        ///     {
-        ///         //Displays the value of the slider in the console.
-        ///         Debug.Log(mainSlider.value);
-        ///     }
-        /// }
-        /// </code>
-        /// </example>
         public virtual float value
         {
             get
@@ -229,36 +114,17 @@ namespace Visage.Runtime
         }
 
         /// <summary>
-        /// Set the value of the slider without invoking onValueChanged callback.
+        /// Set the value of the StatBar without invoking onValueChanged callback.
         /// </summary>
-        /// <param name="input">The new value for the slider.</param>
+        /// <param name="input">The new value for the StatBar.</param>
         public virtual void SetValueWithoutNotify(float input)
         {
             Set(input, false);
         }
 
         /// <summary>
-        /// The current value of the slider normalized into a value between 0 and 1.
+        /// The current value of the StatBar normalized into a value between 0 and 1.
         /// </summary>
-        /// <example>
-        /// <code>
-        /// using UnityEngine;
-        /// using System.Collections;
-        /// using UnityEngine.UI; // Required when Using UI elements.
-        ///
-        /// public class Example : MonoBehaviour
-        /// {
-        ///     public Slider mainSlider;
-        ///
-        ///     //Set to invoke when "OnValueChanged" method is called.
-        ///     void CheckNormalisedValue()
-        ///     {
-        ///         //Displays the normalised value of the slider everytime the value changes.
-        ///         Debug.Log(mainSlider.normalizedValue);
-        ///     }
-        /// }
-        /// </code>
-        /// </example>
         public float normalizedValue
         {
             get
@@ -279,42 +145,14 @@ namespace Visage.Runtime
         private StatBarEvent m_OnValueChanged = new StatBarEvent();
 
         /// <summary>
-        /// Callback executed when the value of the slider is changed.
+        /// Callback executed when the value of the StatBar is changed.
         /// </summary>
-        /// <example>
-        /// <code>
-        /// using UnityEngine;
-        /// using System.Collections;
-        /// using UnityEngine.UI; // Required when Using UI elements.
-        ///
-        /// public class Example : MonoBehaviour
-        /// {
-        ///     public Slider mainSlider;
-        ///
-        ///     public void Start()
-        ///     {
-        ///         //Adds a listener to the main slider and invokes a method when the value changes.
-        ///         mainSlider.onValueChanged.AddListener(delegate {ValueChangeCheck(); });
-        ///     }
-        ///
-        ///     // Invoked when the value of the slider changes.
-        ///     public void ValueChangeCheck()
-        ///     {
-        ///         Debug.Log(mainSlider.value);
-        ///     }
-        /// }
-        /// </code>
-        /// </example>
         public StatBarEvent onValueChanged { get { return m_OnValueChanged; } set { m_OnValueChanged = value; } }
 
         // Private fields
-
         private Image m_FillImage;
         private Transform m_FillTransform;
         private RectTransform m_FillContainerRect;
-
-        // The offset from handle position to mouse down position
-        private Vector2 m_Offset = Vector2.zero;
 
         private DrivenRectTransformTracker m_Tracker;
 
@@ -322,7 +160,7 @@ namespace Visage.Runtime
         private bool m_DelayedUpdateVisuals = false;
 
         // Size of each step.
-        float stepSize { get { return wholeNumbers ? 1 : (maxValue - minValue) * 0.1f; } }
+        private float stepSize { get { return wholeNumbers ? 1 : (maxValue - minValue) * 0.1f; } }
 
         protected StatBar()
         { }
@@ -403,7 +241,7 @@ namespace Visage.Runtime
 
         protected override void OnDidApplyAnimationProperties()
         {
-            // Has value changed? Various elements of the slider have the old normalisedValue assigned, we can use this to perform a comparison.
+            // Has value changed? Various elements of the StatBar have the old normalisedValue assigned, we can use this to perform a comparison.
             // We also need to ensure the value stays within min/max.
             m_Value = ClampValue(m_Value);
             float oldNormalizedValue = normalizedValue;
@@ -419,7 +257,7 @@ namespace Visage.Runtime
 
             if (oldNormalizedValue != normalizedValue)
             {
-                UISystemProfilerApi.AddMarker("Slider.value", this);
+                UISystemProfilerApi.AddMarker("StatBar.value", this);
                 onValueChanged.Invoke(m_Value);
             }
         }
@@ -451,9 +289,9 @@ namespace Visage.Runtime
         }
 
         /// <summary>
-        /// Set the value of the slider.
+        /// Set the value of the StatBar.
         /// </summary>
-        /// <param name="input">The new value for the slider.</param>
+        /// <param name="input">The new value for the StatBar.</param>
         /// <param name="sendCallback">If the OnValueChanged callback should be invoked.</param>
         /// <remarks>
         /// Process the input to ensure the value is between min and max value. If the input is different set the value and send the callback is required.
@@ -471,7 +309,7 @@ namespace Visage.Runtime
             UpdateVisuals();
             if (sendCallback)
             {
-                UISystemProfilerApi.AddMarker("Slider.value", this);
+                UISystemProfilerApi.AddMarker("StatBar.value", this);
                 m_OnValueChanged.Invoke(newValue);
             }
         }
@@ -496,7 +334,7 @@ namespace Visage.Runtime
         Axis axis { get { return (m_Direction == Direction.LeftToRight || m_Direction == Direction.RightToLeft) ? Axis.Horizontal : Axis.Vertical; } }
         bool reverseValue { get { return m_Direction == Direction.RightToLeft || m_Direction == Direction.TopToBottom; } }
 
-        // Force-update the slider. Useful if you've changed the properties and want it to update visually.
+        // Force-update the statBar. Useful if you've changed the properties and want it to update visually.
         private void UpdateVisuals()
         {
 #if UNITY_EDITOR
@@ -531,27 +369,10 @@ namespace Visage.Runtime
 
 
         /// <summary>
-        /// Sets the direction of this slider, optionally changing the layout as well.
+        /// Sets the direction of this StatBar, optionally changing the layout as well.
         /// </summary>
-        /// <param name="direction">The direction of the slider</param>
-        /// <param name="includeRectLayouts">Should the layout be flipped together with the slider direction</param>
-        /// <example>
-        /// <code>
-        /// using UnityEngine;
-        /// using System.Collections;
-        /// using UnityEngine.UI; // Required when Using UI elements.
-        ///
-        /// public class Example : MonoBehaviour
-        /// {
-        ///     public Slider mainSlider;
-        ///
-        ///     public void Start()
-        ///     {
-        ///         mainSlider.SetDirection(Slider.Direction.LeftToRight, false);
-        ///     }
-        /// }
-        /// </code>
-        /// </example>
+        /// <param name="direction">The direction of the StatBar</param>
+        /// <param name="includeRectLayouts">Should the layout be flipped together with the StatBar direction</param>
         public void SetDirection(Direction direction, bool includeRectLayouts)
         {
             Axis oldAxis = axis;
