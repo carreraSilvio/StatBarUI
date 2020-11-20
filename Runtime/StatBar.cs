@@ -17,8 +17,8 @@ namespace Visage.Runtime
     /// The anchors of the fill and handle RectTransforms are driven by the Slider. The fill and handle can be direct children of the GameObject with the Slider, or intermediary RectTransforms can be placed in between for additional control.
     /// When a change to the slider value occurs, a callback is sent to any registered listeners of UI.Slider.onValueChanged.
     /// </remarks>
-    public class StatBar : Selectable, IDragHandler, IInitializePotentialDragHandler, ICanvasElement
-    {
+    public class StatBar : Selectable, ICanvasElement
+    { 
         /// <summary>
         /// Setting that indicates one of four directions.
         /// </summary>
@@ -626,13 +626,6 @@ namespace Visage.Runtime
             }
         }
 
-        public virtual void OnDrag(PointerEventData eventData)
-        {
-            if (!MayDrag(eventData))
-                return;
-            UpdateDrag(eventData, eventData.pressEventCamera);
-        }
-
         public override void OnMove(AxisEventData eventData)
         {
             if (!IsActive() || !IsInteractable())
@@ -708,11 +701,6 @@ namespace Visage.Runtime
             if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Vertical)
                 return null;
             return base.FindSelectableOnDown();
-        }
-
-        public virtual void OnInitializePotentialDrag(PointerEventData eventData)
-        {
-            eventData.useDragThreshold = false;
         }
 
         /// <summary>
