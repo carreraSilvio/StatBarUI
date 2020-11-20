@@ -51,50 +51,38 @@ namespace Visage.Runtime
         /// </summary>
         public class StatBarEvent : UnityEvent<float> { }
 
-        [SerializeField]
-        private RectTransform m_FillRect;
-
         /// <summary>
         /// Optional RectTransform to use as fill for the StatBar.
         /// </summary>
         public RectTransform fillRect { get { return m_FillRect; } set { if (SetPropertyUtility.SetClass(ref m_FillRect, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
-
-        [Space]
-
-        [SerializeField]
-        private Direction m_Direction = Direction.LeftToRight;
 
         /// <summary>
         /// The direction of the StatBar, from minimum to maximum value.
         /// </summary>
         public Direction direction { get { return m_Direction; } set { if (SetPropertyUtility.SetStruct(ref m_Direction, value)) UpdateVisuals(); } }
 
-        [SerializeField]
-        private float m_MinValue = 0;
-
         /// <summary>
         /// The minimum allowed value of the StatBar.
         /// </summary>
         public float minValue { get { return m_MinValue; } set { if (SetPropertyUtility.SetStruct(ref m_MinValue, value)) { Set(m_Value); UpdateVisuals(); } } }
-
-        [SerializeField]
-        private float m_MaxValue = 1;
 
         /// <summary>
         /// The maximum allowed value of the StatBar.
         /// </summary>
         public float maxValue { get { return m_MaxValue; } set { if (SetPropertyUtility.SetStruct(ref m_MaxValue, value)) { Set(m_Value); UpdateVisuals(); } } }
 
-        [SerializeField]
-        private bool m_WholeNumbers = false;
-
         /// <summary>
         /// Should the value only be allowed to be whole numbers?
         /// </summary>
         public bool wholeNumbers { get { return m_WholeNumbers; } set { if (SetPropertyUtility.SetStruct(ref m_WholeNumbers, value)) { Set(m_Value); UpdateVisuals(); } } }
 
-        [SerializeField]
-        protected float m_Value;
+        [SerializeField] private RectTransform m_FillRect;
+        [Space]
+        [SerializeField] private Direction m_Direction = Direction.LeftToRight;
+        [SerializeField] private float m_MinValue = 0;
+        [SerializeField] private float m_MaxValue = 1;
+        [SerializeField] private bool m_WholeNumbers = false;
+        [SerializeField] protected float m_Value;
 
         /// <summary>
         /// The current value of the StatBar.
