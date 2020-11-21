@@ -76,6 +76,8 @@ namespace Visage.Runtime
         /// </summary>
         public bool wholeNumbers { get { return m_WholeNumbers; } set { if (SetPropertyUtility.SetStruct(ref m_WholeNumbers, value)) { Set(m_Value); UpdateVisuals(); } } }
 
+       
+
         [SerializeField] private RectTransform m_FillRect;
         [Space]
         [SerializeField] private Direction m_Direction = Direction.LeftToRight;

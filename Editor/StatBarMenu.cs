@@ -22,11 +22,15 @@ namespace Visage.Editor
             StatBar statBar;
             GameObject fillArea;
             GameObject fill;
+            GameObject infoArea;
 
             CreateBar();
             CreateBackground();
             CreateFillArea();
             CreateFill();
+            CreateInfoArea();
+            CreateNameLabel();
+            CreateValueLabel();
 
             statBar.fillRect = fill.GetComponent<RectTransform>();
             statBar.value = statBar.maxValue;
@@ -80,17 +84,15 @@ namespace Visage.Editor
                 img.SetNativeSize();
 
                 GameObjectUtility.SetParentAndAlign(bg, statBarHolder);
-                MatchParentSize(bg, false, true);
-                Stretch(bg, true, false);
+                Stretch(bg, true, true);
             }
             void CreateFillArea()
             {
-                fillArea = new GameObject("Fill Area");
+                fillArea = new GameObject("FillArea");
                 fillArea.AddComponent<RectTransform>();
 
                 GameObjectUtility.SetParentAndAlign(fillArea, statBarHolder);
-                MatchParentSize(fillArea, false, true);
-                Stretch(fillArea, true, false);
+                Stretch(fillArea, true, true);
             }
             void CreateFill()
             {
@@ -104,6 +106,47 @@ namespace Visage.Editor
 
                 GameObjectUtility.SetParentAndAlign(fill, fillArea.gameObject);
                 Stretch(fill, true, true);
+            }
+            void CreateInfoArea()
+            {
+                infoArea = new GameObject("InfoArea");
+                var rect = infoArea.AddComponent<RectTransform>();
+
+                GameObjectUtility.SetParentAndAlign(infoArea, statBarHolder);
+                MatchParentSize(infoArea, true, true);
+
+                //Align top-left
+                rect.anchorMin = new Vector2(0, 1);
+                rect.anchorMax = new Vector2(0, 1);
+                rect.pivot = new Vector2(0, 1);
+
+                var pos = rect.anchoredPosition;
+                pos.y = 20;
+                rect.anchoredPosition = pos;
+            }
+            void CreateNameLabel()
+            {
+                var nameLabel = new GameObject("NameLabel");
+                nameLabel.AddComponent<RectTransform>();
+                var nameText = nameLabel.AddComponent<Text>();
+                nameText.text = "HP";
+                nameText.alignment = TextAnchor.MiddleLeft;
+
+                GameObjectUtility.SetParentAndAlign(nameLabel, infoArea.gameObject);
+                Stretch(nameLabel, true, true);
+                ApplyOffset(nameLabel, 2f);
+            }
+            void CreateValueLabel()
+            {
+                var valueLabel = new GameObject("ValueLabel");
+                valueLabel.AddComponent<RectTransform>();
+                var nameText = valueLabel.AddComponent<Text>();
+                nameText.text = statBar.maxValue.ToString("0000");
+                nameText.alignment = TextAnchor.MiddleLeft;
+
+                GameObjectUtility.SetParentAndAlign(valueLabel, infoArea.gameObject);
+                Stretch(valueLabel, true, true);
+                ApplyOffset(valueLabel, 25f);
             }
             #endregion
         }
@@ -150,7 +193,7 @@ namespace Visage.Editor
 
             //Adjust right and/or top values
             childRect.offsetMax = new Vector2(
-                horizontal ? 0f : childRect.offsetMax.x, //Left
+                horizontal ? 0f : childRect.offsetMax.x, //Right
                 vertical ? 0f : childRect.offsetMax.y    //Top
                 );
 
@@ -158,6 +201,22 @@ namespace Visage.Editor
             //Right rectTransform.offsetMax.x;
             //Top rectTransform.offsetMax.y;
             //Bottom rectTransform.offsetMin.y;
+        }
+
+        private static void ApplyOffset(GameObject child, float left = 0f, float bot = 0f, float right = 0f, float top = 0f)
+        {
+            var childRect = child.GetComponent<RectTransform>();
+
+            var offsetMin = childRect.offsetMin;
+            var offsetMax = childRect.offsetMax;
+
+            offsetMin.x += left; //Left
+            offsetMin.y += bot; //Bot
+            offsetMax.x += right; //Right
+            offsetMax.y += top; //Top
+
+            childRect.offsetMin = offsetMin;
+            childRect.offsetMax = offsetMax;
         }
 
     }
