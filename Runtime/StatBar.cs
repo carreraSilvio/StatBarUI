@@ -329,7 +329,6 @@ namespace Visage.Runtime
             
             if (!m_DelayedUpdateVisuals)
             {
-                Debug.Log("update visuals inside set");
                 UpdateVisuals();
             }
 
