@@ -76,7 +76,20 @@ namespace Visage.Runtime
         /// </summary>
         public bool wholeNumbers { get { return m_WholeNumbers; } set { if (SetPropertyUtility.SetStruct(ref m_WholeNumbers, value)) { Set(m_Value); UpdateVisuals(); } } }
 
-       
+        /// <summary>
+        /// A label showing the current value with leading zeroes set
+        /// </summary>
+        public RectTransform ValueLabel{ get { return _valueLabel; } set { if (SetPropertyUtility.SetClass(ref _valueLabel, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
+
+        /// <summary>
+        /// The total number of leading zeroes
+        /// </summary>
+        public int LeadingZeroes { get { return _leadingZeroes; } set { if (SetPropertyUtility.SetStruct(ref _leadingZeroes, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
+
+        public string LeadingZeroesString => _leadingZeroesString; 
+
+        [SerializeField] private int _leadingZeroes = 2;
+        [SerializeField] private RectTransform _valueLabel;
 
         [SerializeField] private RectTransform m_FillRect;
         [Space]
@@ -139,15 +152,19 @@ namespace Visage.Runtime
         /// </summary>
         public StatBarEvent onValueChanged { get { return m_OnValueChanged; } set { m_OnValueChanged = value; } }
 
-        // Private fields
+        #region Private Fields
         private Image m_FillImage;
         private Transform m_FillTransform;
         private RectTransform m_FillContainerRect;
 
         private DrivenRectTransformTracker m_Tracker;
 
+        private string _leadingZeroesString = "00";
+        private object _valueLabelTextCmp; //Either Text or TMP_Text compoment
+
         // This "delayed" mechanism is required for case 1037681.
-        private bool m_DelayedUpdateVisuals = false;
+        private bool m_DelayedUpdateVisuals = false; 
+        #endregion
 
         protected StatBar() { }
 
@@ -263,6 +280,23 @@ namespace Visage.Runtime
                 m_FillContainerRect = null;
                 m_FillImage = null;
             }
+
+            if (_valueLabel)
+            {
+                _valueLabelTextCmp = _valueLabel.GetComponent<Text>();
+                if(_valueLabelTextCmp == null)
+                {
+                    _valueLabelTextCmp = _valueLabel.GetComponent<TMPro.TMP_Text>();
+                }
+
+                _leadingZeroesString = string.Empty;
+                for (int zeroCount = _leadingZeroes; zeroCount > 0; zeroCount--)
+                    _leadingZeroesString += "0";
+            }
+            else
+            {
+                _valueLabel = null;
+            }
      
         }
 
@@ -356,6 +390,19 @@ namespace Visage.Runtime
 
                 m_FillRect.anchorMin = anchorMin;
                 m_FillRect.anchorMax = anchorMax;
+            }
+
+            if (_valueLabel != null && _valueLabelTextCmp != null)
+            {
+                if(_valueLabelTextCmp is Text labelText)
+                {
+                    labelText.text = value.ToString(!wholeNumbers ? "" : LeadingZeroesString);
+                }
+                else if(_valueLabelTextCmp is TMPro.TMP_Text labelTmpText)
+                {
+                    labelTmpText.text = value.ToString(!wholeNumbers ? "" : LeadingZeroesString);
+                }
+
             }
         }
 

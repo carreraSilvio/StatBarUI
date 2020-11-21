@@ -8,6 +8,8 @@ namespace Visage.Editor
 {
     public sealed class StatBarMenu
     {
+        private static int INITIAL_MAX_VALUE = 100;
+
         // Add a menu item to create custom GameObjects.
         // Priority 1 ensures it is grouped with the other menu items of the same kind
         // and propagated to the hierarchy dropdown and hierarchy context menus.
@@ -23,6 +25,7 @@ namespace Visage.Editor
             GameObject fillArea;
             GameObject fill;
             GameObject infoArea;
+            GameObject valueLabel;
 
             CreateBar();
             CreateBackground();
@@ -33,8 +36,9 @@ namespace Visage.Editor
             CreateValueLabel();
 
             statBar.fillRect = fill.GetComponent<RectTransform>();
+            statBar.ValueLabel = valueLabel.GetComponent<RectTransform>();
             statBar.value = statBar.maxValue;
-            
+
 
             #region Locals
             void FindOrCreateCanvas()
@@ -65,6 +69,8 @@ namespace Visage.Editor
                 // Create and set the statBar size
                 statBarHolder = new GameObject("StatBar");
                 statBar = statBarHolder.AddComponent<StatBar>();
+                statBar.maxValue = INITIAL_MAX_VALUE;
+                statBar.wholeNumbers = true;
                 var statBarRect = statBarHolder.GetComponent<RectTransform>();
                 statBarRect.sizeDelta = new Vector2(160, 20);
 
@@ -138,10 +144,10 @@ namespace Visage.Editor
             }
             void CreateValueLabel()
             {
-                var valueLabel = new GameObject("ValueLabel");
+                valueLabel = new GameObject("ValueLabel");
                 valueLabel.AddComponent<RectTransform>();
                 var nameText = valueLabel.AddComponent<Text>();
-                nameText.text = statBar.maxValue.ToString("0000");
+                nameText.text = statBar.maxValue.ToString(statBar.LeadingZeroesString);
                 nameText.alignment = TextAnchor.MiddleLeft;
 
                 GameObjectUtility.SetParentAndAlign(valueLabel, infoArea.gameObject);

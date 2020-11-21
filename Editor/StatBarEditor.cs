@@ -1,4 +1,6 @@
 ﻿using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
 using Visage.Runtime;
 
 namespace Visage.Editor
@@ -18,6 +20,9 @@ namespace Visage.Editor
         SerializedProperty m_Value;
         SerializedProperty m_OnValueChanged;
 
+        SerializedProperty _valueLabel;
+        SerializedProperty _leadingZeroes;
+
         protected void OnEnable()
         {
             m_FillRect = serializedObject.FindProperty("m_FillRect");
@@ -27,6 +32,9 @@ namespace Visage.Editor
             m_WholeNumbers = serializedObject.FindProperty("m_WholeNumbers");
             m_Value = serializedObject.FindProperty("m_Value");
             m_OnValueChanged = serializedObject.FindProperty("m_OnValueChanged");
+
+            _valueLabel = serializedObject.FindProperty("_valueLabel");
+            _leadingZeroes = serializedObject.FindProperty("_leadingZeroes");
         }
 
         public override void OnInspectorGUI()
@@ -53,6 +61,27 @@ namespace Visage.Editor
                 EditorGUILayout.PropertyField(m_MaxValue);
                 EditorGUILayout.PropertyField(m_WholeNumbers);
                 EditorGUILayout.Slider(m_Value, m_MinValue.floatValue, m_MaxValue.floatValue);
+
+                //Draw the info area
+                EditorGUILayout.Space();
+                EditorGUILayout.PropertyField(_valueLabel);
+                if(_valueLabel.objectReferenceValue != null)
+                {
+                    var textHolder = _valueLabel.objectReferenceValue as RectTransform;
+                    if (textHolder.GetComponent<Text>() ||
+                        textHolder.GetComponent<TMPro.TMP_Text>()){
+                        EditorGUILayout.IntSlider(_leadingZeroes, 0, 8);
+                    }
+                    else
+                    {
+                        _valueLabel.objectReferenceValue = null;
+                    }
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("Specify a RectTransform whith a Text or TMP_Text component for the stat bar to set the value.", MessageType.Info);
+                }
+                
 
                 // Draw the event notification options
                 EditorGUILayout.Space();
