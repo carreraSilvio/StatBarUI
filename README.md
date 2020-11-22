@@ -1,6 +1,10 @@
 # Stat Bar UI 
 Create HealthBar, StatusBar and LoadingProgressBar with a few clicks.
 
+# Features
+* Optional Label with name and value
+* Set number of leading zeroes
+
 ## Prerequisites
 Unity 2018.3 and up
 
