@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Visage.Runtime;
+using Visage.StatBarUI.Runtime;
 
-namespace Visage.Editor
+namespace Visage.StatBarUI.Editor
 {
     public sealed class StatBarMenu
     {
@@ -167,7 +167,7 @@ namespace Visage.Editor
             var childRect = child.GetComponent<RectTransform>();
 
             childRect.sizeDelta = new Vector2(
-                width ? parentRect.sizeDelta.x : childRect.sizeDelta.x, 
+                width ? parentRect.sizeDelta.x : childRect.sizeDelta.x,
                 height ? parentRect.sizeDelta.y : childRect.sizeDelta.y);
         }
 

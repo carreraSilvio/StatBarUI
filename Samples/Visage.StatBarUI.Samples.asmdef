@@ -1,0 +1,15 @@
+{
+    "name": "Visage.StatBarUI.Samples",
+    "references": [
+        "GUID:c758e240ac8dc64409a7d507f9191eef"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

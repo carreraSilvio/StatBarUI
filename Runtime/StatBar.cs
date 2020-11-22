@@ -4,7 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Visage.Runtime
+namespace Visage.StatBarUI.Runtime
 {
     [AddComponentMenu("UI/Visage/Stat Bar", 0)]
     [ExecuteInEditMode]
@@ -18,7 +18,7 @@ namespace Visage.Runtime
     /// When a change to the StatBar value occurs, a callback is sent to any registered listeners of UI.StatBar.onValueChanged.
     /// </remarks>
     public class StatBar : UIBehaviour, ICanvasElement
-    { 
+    {
         /// <summary>
         /// Setting that indicates one of four directions.
         /// </summary>
@@ -79,14 +79,14 @@ namespace Visage.Runtime
         /// <summary>
         /// A label showing the current value with leading zeroes set
         /// </summary>
-        public RectTransform ValueLabel{ get { return _valueLabel; } set { if (SetPropertyUtility.SetClass(ref _valueLabel, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
+        public RectTransform ValueLabel { get { return _valueLabel; } set { if (SetPropertyUtility.SetClass(ref _valueLabel, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
 
         /// <summary>
         /// The total number of leading zeroes
         /// </summary>
         public int LeadingZeroes { get { return _leadingZeroes; } set { if (SetPropertyUtility.SetStruct(ref _leadingZeroes, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
 
-        public string LeadingZeroesString => _leadingZeroesString; 
+        public string LeadingZeroesString => _leadingZeroesString;
 
         [SerializeField] private int _leadingZeroes = 2;
         [SerializeField] private RectTransform _valueLabel;
@@ -163,7 +163,7 @@ namespace Visage.Runtime
         private object _valueLabelTextCmp; //Either Text or TMP_Text compoment
 
         // This "delayed" mechanism is required for case 1037681.
-        private bool m_DelayedUpdateVisuals = false; 
+        private bool m_DelayedUpdateVisuals = false;
         #endregion
 
         protected StatBar() { }
@@ -253,7 +253,7 @@ namespace Visage.Runtime
                 if (m_FillImage != null && m_FillImage.type == Image.Type.Filled)
                     oldNormalizedValue = m_FillImage.fillAmount;
                 else
-                    oldNormalizedValue = (reverseValue ? 1 - m_FillRect.anchorMin[(int)axis] : m_FillRect.anchorMax[(int)axis]);
+                    oldNormalizedValue = reverseValue ? 1 - m_FillRect.anchorMin[(int)axis] : m_FillRect.anchorMax[(int)axis];
             }
 
             UpdateVisuals();
@@ -284,7 +284,7 @@ namespace Visage.Runtime
             if (_valueLabel)
             {
                 _valueLabelTextCmp = _valueLabel.GetComponent<Text>();
-                if(_valueLabelTextCmp == null)
+                if (_valueLabelTextCmp == null)
                 {
                     _valueLabelTextCmp = _valueLabel.GetComponent<TMPro.TMP_Text>();
                 }
@@ -297,7 +297,7 @@ namespace Visage.Runtime
             {
                 _valueLabel = null;
             }
-     
+
         }
 
         float ClampValue(float input)
@@ -326,7 +326,7 @@ namespace Visage.Runtime
                 return;
 
             m_Value = newValue;
-            
+
             if (!m_DelayedUpdateVisuals)
             {
                 UpdateVisuals();
@@ -356,7 +356,7 @@ namespace Visage.Runtime
             Vertical = 1
         }
 
-        Axis axis { get { return (m_Direction == Direction.LeftToRight || m_Direction == Direction.RightToLeft) ? Axis.Horizontal : Axis.Vertical; } }
+        Axis axis { get { return m_Direction == Direction.LeftToRight || m_Direction == Direction.RightToLeft ? Axis.Horizontal : Axis.Vertical; } }
         bool reverseValue { get { return m_Direction == Direction.RightToLeft || m_Direction == Direction.TopToBottom; } }
 
         // Force-update the statBar. Useful if you've changed the properties and want it to update visually.
@@ -393,11 +393,11 @@ namespace Visage.Runtime
 
             if (_valueLabel != null && _valueLabelTextCmp != null)
             {
-                if(_valueLabelTextCmp is Text labelText)
+                if (_valueLabelTextCmp is Text labelText)
                 {
                     labelText.text = value.ToString(!wholeNumbers ? "" : LeadingZeroesString);
                 }
-                else if(_valueLabelTextCmp is TMPro.TMP_Text labelTmpText)
+                else if (_valueLabelTextCmp is TMPro.TMP_Text labelTmpText)
                 {
                     labelTmpText.text = value.ToString(!wholeNumbers ? "" : LeadingZeroesString);
                 }
@@ -427,5 +427,5 @@ namespace Visage.Runtime
                 RectTransformUtility.FlipLayoutOnAxis(transform as RectTransform, (int)axis, true, true);
         }
     }
-    
+
 }

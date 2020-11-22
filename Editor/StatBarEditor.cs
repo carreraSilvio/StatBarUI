@@ -1,9 +1,9 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-using Visage.Runtime;
+using Visage.StatBarUI.Runtime;
 
-namespace Visage.Editor
+namespace Visage.StatBarUI.Editor
 {
     [CustomEditor(typeof(StatBar), true)]
     [CanEditMultipleObjects]
@@ -65,11 +65,12 @@ namespace Visage.Editor
                 //Draw the info area
                 EditorGUILayout.Space();
                 EditorGUILayout.PropertyField(_valueLabel);
-                if(_valueLabel.objectReferenceValue != null)
+                if (_valueLabel.objectReferenceValue != null)
                 {
                     var textHolder = _valueLabel.objectReferenceValue as RectTransform;
                     if (textHolder.GetComponent<Text>() ||
-                        textHolder.GetComponent<TMPro.TMP_Text>()){
+                        textHolder.GetComponent<TMPro.TMP_Text>())
+                    {
                         EditorGUILayout.IntSlider(_leadingZeroes, 0, 8);
                     }
                     else
@@ -81,7 +82,7 @@ namespace Visage.Editor
                 {
                     EditorGUILayout.HelpBox("Specify a RectTransform whith a Text or TMP_Text component for the stat bar to set the value.", MessageType.Info);
                 }
-                
+
 
                 // Draw the event notification options
                 EditorGUILayout.Space();
