@@ -14,7 +14,7 @@ namespace Visage.StatBarUI.Runtime
     /// </summary>
     public class StatBar : UIBehaviour, ICanvasElement
     {
-        public enum Transition
+        public enum FillTransition
         {
             None,
             ColorTint
@@ -23,24 +23,29 @@ namespace Visage.StatBarUI.Runtime
         [System.Serializable]
         public class ColorTintTransition
         {
-            public float percent;
+            public int percent;
             public Color color;
+
+            public float NormalizedPercent => Mathf.InverseLerp(0, 100, percent);
         }
 
-        [SerializeField] private Transition _transition;
+
+        public FillTransition Transition { get { return _transition; } set { if (SetPropertyUtility.SetStruct(ref _transition, value)) UpdateVisuals(); } }
+
+        [SerializeField] private FillTransition _transition;
         [SerializeField] private ColorTintTransition _normalColorTintTransition = new ColorTintTransition
         {
-            percent = 95,
+            percent = 100,
             color = Color.red
         };
         [SerializeField] private ColorTintTransition _lowColorTintTransition = new ColorTintTransition
         {
-            percent = 30,
+            percent = 40,
             color = new Color(0.75f, 0f, 0f)
         };
         [SerializeField] private ColorTintTransition _criticalColorTintTransition = new ColorTintTransition
         {
-            percent = 10,
+            percent = 20,
             color = new Color(0.25f, 0f, 0f)
         };
 
@@ -158,7 +163,7 @@ namespace Visage.StatBarUI.Runtime
         /// <summary>
         /// The current value of the StatBar normalized into a value between 0 and 1.
         /// </summary>
-        public float normalizedValue
+        public float NormalizedValue
         {
             get
             {
@@ -183,17 +188,17 @@ namespace Visage.StatBarUI.Runtime
         public StatBarEvent onValueChanged { get { return _onValueChanged; } set { _onValueChanged = value; } }
 
         #region Private Fields
-        private Image m_FillImage;
-        private Transform m_FillTransform;
-        private RectTransform m_FillContainerRect;
+        private Image _fillImage;
+        private Transform _fillTransform;
+        private RectTransform _fillContainerRect;
 
-        private DrivenRectTransformTracker m_Tracker;
+        private DrivenRectTransformTracker _tracker;
 
         private string _leadingZeroesString = "00";
         private object _valueLabelTextCmp; //Either Text or TMP_Text compoment
 
         // This "delayed" mechanism is required for case 1037681.
-        private bool m_DelayedUpdateVisuals = false;
+        private bool _delayedUpdateVisuals = false;
         #endregion
 
         protected StatBar() { }
@@ -214,7 +219,7 @@ namespace Visage.StatBarUI.Runtime
             {
                 UpdateCachedReferences();
                 // Update rects in next update since other things might affect them even if value didn't change.
-                m_DelayedUpdateVisuals = true;
+                _delayedUpdateVisuals = true;
                 Set(_value, false);
             }
 
@@ -255,7 +260,7 @@ namespace Visage.StatBarUI.Runtime
 
         protected override void OnDisable()
         {
-            m_Tracker.Clear();
+            _tracker.Clear();
             base.OnDisable();
         }
 
@@ -265,9 +270,9 @@ namespace Visage.StatBarUI.Runtime
         /// </summary>
         protected virtual void Update()
         {
-            if (m_DelayedUpdateVisuals)
+            if (_delayedUpdateVisuals)
             {
-                m_DelayedUpdateVisuals = false;
+                _delayedUpdateVisuals = false;
                 UpdateVisuals();
             }
         }
@@ -277,18 +282,18 @@ namespace Visage.StatBarUI.Runtime
             // Has value changed? Various elements of the StatBar have the old normalisedValue assigned, we can use this to perform a comparison.
             // We also need to ensure the value stays within min/max.
             _value = ClampValue(_value);
-            float oldNormalizedValue = normalizedValue;
-            if (m_FillContainerRect != null)
+            float oldNormalizedValue = NormalizedValue;
+            if (_fillContainerRect != null)
             {
-                if (m_FillImage != null && m_FillImage.type == Image.Type.Filled)
-                    oldNormalizedValue = m_FillImage.fillAmount;
+                if (_fillImage != null && _fillImage.type == Image.Type.Filled)
+                    oldNormalizedValue = _fillImage.fillAmount;
                 else
                     oldNormalizedValue = reverseValue ? 1 - _fillRect.anchorMin[(int)axis] : _fillRect.anchorMax[(int)axis];
             }
 
             UpdateVisuals();
 
-            if (oldNormalizedValue != normalizedValue)
+            if (oldNormalizedValue != NormalizedValue)
             {
                 UISystemProfilerApi.AddMarker("StatBar.value", this);
                 onValueChanged.Invoke(_value);
@@ -299,16 +304,16 @@ namespace Visage.StatBarUI.Runtime
         {
             if (_fillRect && _fillRect != (RectTransform)transform)
             {
-                m_FillTransform = _fillRect.transform;
-                m_FillImage = _fillRect.GetComponent<Image>();
-                if (m_FillTransform.parent != null)
-                    m_FillContainerRect = m_FillTransform.parent.GetComponent<RectTransform>();
+                _fillTransform = _fillRect.transform;
+                _fillImage = _fillRect.GetComponent<Image>();
+                if (_fillTransform.parent != null)
+                    _fillContainerRect = _fillTransform.parent.GetComponent<RectTransform>();
             }
             else
             {
                 _fillRect = null;
-                m_FillContainerRect = null;
-                m_FillImage = null;
+                _fillContainerRect = null;
+                _fillImage = null;
             }
 
             if (_valueLabel)
@@ -321,7 +326,9 @@ namespace Visage.StatBarUI.Runtime
 
                 _leadingZeroesString = string.Empty;
                 for (int zeroCount = _leadingZeroes; zeroCount > 0; zeroCount--)
+                {
                     _leadingZeroesString += "0";
+                }
             }
             else
             {
@@ -357,7 +364,7 @@ namespace Visage.StatBarUI.Runtime
 
             _value = newValue;
 
-            if (!m_DelayedUpdateVisuals)
+            if (!_delayedUpdateVisuals)
             {
                 UpdateVisuals();
             }
@@ -397,24 +404,24 @@ namespace Visage.StatBarUI.Runtime
                 UpdateCachedReferences();
 #endif
 
-            m_Tracker.Clear();
+            _tracker.Clear();
 
-            if (m_FillContainerRect != null)
+            if (_fillContainerRect != null)
             {
-                m_Tracker.Add(this, _fillRect, DrivenTransformProperties.Anchors);
+                _tracker.Add(this, _fillRect, DrivenTransformProperties.Anchors);
                 Vector2 anchorMin = Vector2.zero;
                 Vector2 anchorMax = Vector2.one;
 
-                if (m_FillImage != null && m_FillImage.type == Image.Type.Filled)
+                if (_fillImage != null && _fillImage.type == Image.Type.Filled)
                 {
-                    m_FillImage.fillAmount = normalizedValue;
+                    _fillImage.fillAmount = NormalizedValue;
                 }
                 else
                 {
                     if (reverseValue)
-                        anchorMin[(int)axis] = 1 - normalizedValue;
+                        anchorMin[(int)axis] = 1 - NormalizedValue;
                     else
-                        anchorMax[(int)axis] = normalizedValue;
+                        anchorMax[(int)axis] = NormalizedValue;
                 }
 
                 _fillRect.anchorMin = anchorMin;
@@ -431,7 +438,23 @@ namespace Visage.StatBarUI.Runtime
                 {
                     labelTmpText.text = Value.ToString(!WholeNumbers ? "" : LeadingZeroesString);
                 }
+            }
 
+            if(_transition == FillTransition.ColorTint)
+            {
+                float normalizedValue = NormalizedValue;
+                if (normalizedValue <= _criticalColorTintTransition.NormalizedPercent)
+                {
+                    _fillImage.color = _criticalColorTintTransition.color;
+                }
+                else if (normalizedValue <= _lowColorTintTransition.NormalizedPercent)
+                {
+                    _fillImage.color = _lowColorTintTransition.color;
+                }
+                else if (normalizedValue <= _normalColorTintTransition.NormalizedPercent)
+                {
+                    _fillImage.color = _normalColorTintTransition.color;
+                }
             }
         }
 
@@ -457,15 +480,16 @@ namespace Visage.StatBarUI.Runtime
                 RectTransformUtility.FlipLayoutOnAxis(transform as RectTransform, (int)axis, true, true);
         }
 
-        public void SetTransition(Transition transition)
+        public void SetTransition(FillTransition transition)
         {
-            if(transition == Transition.None)
+            Transition = transition;
+            if(transition == FillTransition.None)
             {
-                m_FillImage.color = Color.red;
+                _fillImage.color = Color.red;
             }
-            else if(transition == Transition.ColorTint)
+            else if(transition == FillTransition.ColorTint)
             {
-                m_FillImage.color = _normalColorTintTransition.color;
+                _fillImage.color = _normalColorTintTransition.color;
             }
         }
     }

@@ -111,7 +111,7 @@ namespace Visage.StatBarUI.Editor
             {
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(_transition);
-                StatBar.Transition transition = (StatBar.Transition)_transition.enumValueIndex;
+                StatBar.FillTransition transition = (StatBar.FillTransition)_transition.enumValueIndex;
                 if (EditorGUI.EndChangeCheck())
                 {
                     foreach (var obj in serializedObject.targetObjects)
@@ -120,7 +120,7 @@ namespace Visage.StatBarUI.Editor
                         statBar.SetTransition(transition);
                     }
                 }
-                if (transition == StatBar.Transition.ColorTint)
+                if (transition == StatBar.FillTransition.ColorTint)
                 {
                     EditorGUI.indentLevel++;
 
@@ -137,7 +137,7 @@ namespace Visage.StatBarUI.Editor
                     var color = property.FindPropertyRelative("color");
                     EditorGUILayout.LabelField(labelText);
                     EditorGUI.indentLevel++;
-                    EditorGUILayout.PropertyField(percent);
+                    EditorGUILayout.IntSlider(percent, 0, 100);
                     EditorGUILayout.PropertyField(color);
                     EditorGUI.indentLevel--;
                 }
