@@ -29,25 +29,7 @@ namespace Visage.StatBarUI.Runtime
             public float NormalizedPercent => Mathf.InverseLerp(0, 100, percent);
         }
 
-
-        public FillTransition Transition { get { return _transition; } set { if (SetPropertyUtility.SetStruct(ref _transition, value)) UpdateVisuals(); } }
-
-        [SerializeField] private FillTransition _transition;
-        [SerializeField] private ColorTintTransition _normalColorTintTransition = new ColorTintTransition
-        {
-            percent = 100,
-            color = Color.red
-        };
-        [SerializeField] private ColorTintTransition _lowColorTintTransition = new ColorTintTransition
-        {
-            percent = 40,
-            color = new Color(0.75f, 0f, 0f)
-        };
-        [SerializeField] private ColorTintTransition _criticalColorTintTransition = new ColorTintTransition
-        {
-            percent = 20,
-            color = new Color(0.25f, 0f, 0f)
-        };
+        
 
         /// <summary>
         /// Setting that indicates one of four directions.
@@ -82,6 +64,11 @@ namespace Visage.StatBarUI.Runtime
         public class StatBarEvent : UnityEvent<float> { }
 
         /// <summary>
+        /// The trasition type of the StatBar.
+        /// </summary>
+        public FillTransition Transition { get { return _transition; } set { if (SetPropertyUtility.SetStruct(ref _transition, value)) UpdateVisuals(); } }
+
+        /// <summary>
         /// Optional RectTransform to use as fill for the StatBar.
         /// </summary>
         public RectTransform FillRect { get { return _fillRect; } set { if (SetPropertyUtility.SetClass(ref _fillRect, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
@@ -112,13 +99,13 @@ namespace Visage.StatBarUI.Runtime
         public RectTransform ValueLabel { get { return _valueLabel; } set { if (SetPropertyUtility.SetClass(ref _valueLabel, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
 
         /// <summary>
-        /// The total number of leading zeroes
+        /// The min number of digits visible
         /// </summary>
-        public int LeadingZeroes { get { return _leadingZeroes; } set { if (SetPropertyUtility.SetStruct(ref _leadingZeroes, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
+        public int MinDigits { get { return _minDigits; } set { if (SetPropertyUtility.SetStruct(ref _minDigits, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
 
-        public string LeadingZeroesString => _leadingZeroesString;
+        public string LeadingZeroesString => _digitsVisibleString;
 
-        [SerializeField] private int _leadingZeroes = 2;
+        [SerializeField] private int _minDigits = 2;
         [SerializeField] private RectTransform _valueLabel;
 
         [SerializeField] private RectTransform _fillRect;
@@ -128,6 +115,26 @@ namespace Visage.StatBarUI.Runtime
         [SerializeField] private float _maxValue = 1;
         [SerializeField] private bool _wholeNumbers = false;
         [SerializeField] protected float _value;
+
+        [SerializeField] private FillTransition _transition;
+        [SerializeField]
+        private ColorTintTransition _normalColorTintTransition = new ColorTintTransition
+        {
+            percent = 100,
+            color = Color.red
+        };
+        [SerializeField]
+        private ColorTintTransition _lowColorTintTransition = new ColorTintTransition
+        {
+            percent = 40,
+            color = new Color(0.75f, 0f, 0f)
+        };
+        [SerializeField]
+        private ColorTintTransition _criticalColorTintTransition = new ColorTintTransition
+        {
+            percent = 20,
+            color = new Color(0.25f, 0f, 0f)
+        };
 
         public StatBar(float value)
         {
@@ -194,7 +201,7 @@ namespace Visage.StatBarUI.Runtime
 
         private DrivenRectTransformTracker _tracker;
 
-        private string _leadingZeroesString = "00";
+        private string _digitsVisibleString = "00";
         private object _valueLabelTextCmp; //Either Text or TMP_Text compoment
 
         // This "delayed" mechanism is required for case 1037681.
@@ -324,10 +331,10 @@ namespace Visage.StatBarUI.Runtime
                     _valueLabelTextCmp = _valueLabel.GetComponent<TMPro.TMP_Text>();
                 }
 
-                _leadingZeroesString = string.Empty;
-                for (int zeroCount = _leadingZeroes; zeroCount > 0; zeroCount--)
+                _digitsVisibleString = string.Empty;
+                for (int zeroCount = _minDigits; zeroCount > 0; zeroCount--)
                 {
-                    _leadingZeroesString += "0";
+                    _digitsVisibleString += "0";
                 }
             }
             else

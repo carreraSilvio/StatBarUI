@@ -310,7 +310,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.022233749, g: 0, b: 0.6862745, a: 1}
+  m_Color: {r: 0.6862745, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -484,7 +484,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 51
+  m_Text: 45
 --- !u!222 &455812514
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -851,24 +851,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 284b6fddb998c764d8f8dd581d52a873, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _minDigits: 1
+  _valueLabel: {fileID: 455812512}
+  _fillRect: {fileID: 226021808}
+  _direction: 0
+  _minValue: 0
+  _maxValue: 150
+  _wholeNumbers: 1
+  _value: 45
   _transition: 1
   _normalColorTintTransition:
     percent: 100
     color: {r: 1, g: 0, b: 0, a: 1}
   _lowColorTintTransition:
-    percent: 30
+    percent: 40
     color: {r: 0.6862745, g: 0, b: 0, a: 1}
   _criticalColorTintTransition:
-    percent: 10
+    percent: 20
     color: {r: 0.5, g: 0, b: 0, a: 1}
-  _leadingZeroes: 2
-  _valueLabel: {fileID: 455812512}
-  _fillRect: {fileID: 226021808}
-  _direction: 0
-  _minValue: 0
-  _maxValue: 100
-  _wholeNumbers: 0
-  _value: 51
   _onValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1154,6 +1154,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 284b6fddb998c764d8f8dd581d52a873, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _minDigits: 2
+  _valueLabel: {fileID: 1134345907}
+  _fillRect: {fileID: 1996849853}
+  _direction: 0
+  _minValue: 0
+  _maxValue: 60
+  _wholeNumbers: 1
+  _value: 60
   _transition: 0
   _normalColorTintTransition:
     percent: 95
@@ -1164,14 +1172,6 @@ MonoBehaviour:
   _criticalColorTintTransition:
     percent: 10
     color: {r: 1, g: 0, b: 0, a: 1}
-  _leadingZeroes: 2
-  _valueLabel: {fileID: 1134345907}
-  _fillRect: {fileID: 1996849853}
-  _direction: 0
-  _minValue: 0
-  _maxValue: 60
-  _wholeNumbers: 1
-  _value: 60
   _onValueChanged:
     m_PersistentCalls:
       m_Calls: []

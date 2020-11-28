@@ -26,7 +26,7 @@ namespace Visage.StatBarUI.Editor
         SerializedProperty _criticalColorTintTransition;
 
         SerializedProperty _valueLabel;
-        SerializedProperty _leadingZeroes;
+        SerializedProperty _minDigits;
 
         protected void OnEnable()
         {
@@ -44,13 +44,15 @@ namespace Visage.StatBarUI.Editor
             _criticalColorTintTransition = serializedObject.FindProperty("_criticalColorTintTransition");
 
             _valueLabel = serializedObject.FindProperty("_valueLabel");
-            _leadingZeroes = serializedObject.FindProperty("_leadingZeroes");
+            _minDigits = serializedObject.FindProperty("_minDigits");
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
+            DrawTransition();
+            EditorGUILayout.Space();
             EditorGUILayout.PropertyField(_fillRect);
 
             if (_fillRect.objectReferenceValue != null)
@@ -70,31 +72,12 @@ namespace Visage.StatBarUI.Editor
                 EditorGUILayout.PropertyField(_minValue);
                 EditorGUILayout.PropertyField(_maxValue);
                 EditorGUILayout.PropertyField(_wholeNumbers);
-                EditorGUILayout.Slider(_value, _minValue.floatValue, _maxValue.floatValue);
 
-                DrawTransition();
-
-                //Draw the info area
                 EditorGUILayout.Space();
-                EditorGUILayout.PropertyField(_valueLabel);
-                if (_valueLabel.objectReferenceValue != null)
-                {
-                    var textHolder = _valueLabel.objectReferenceValue as RectTransform;
-                    if (textHolder.GetComponent<Text>() ||
-                        textHolder.GetComponent<TMPro.TMP_Text>())
-                    {
-                        EditorGUILayout.IntSlider(_leadingZeroes, 0, 8);
-                    }
-                    else
-                    {
-                        _valueLabel.objectReferenceValue = null;
-                    }
-                }
-                else
-                {
-                    EditorGUILayout.HelpBox("Specify a RectTransform whith a Text or TMP_Text component for the stat bar to set the value.", MessageType.Info);
-                }
+                EditorGUILayout.Slider(_value, _minValue.floatValue, _maxValue.floatValue);
+                EditorGUILayout.Space();
 
+                DrawInfoArea();
 
                 // Draw the event notification options
                 EditorGUILayout.Space();
@@ -140,6 +123,27 @@ namespace Visage.StatBarUI.Editor
                     EditorGUILayout.IntSlider(percent, 0, 100);
                     EditorGUILayout.PropertyField(color);
                     EditorGUI.indentLevel--;
+                }
+            }
+            void DrawInfoArea()
+            {
+                EditorGUILayout.PropertyField(_valueLabel);
+                if (_valueLabel.objectReferenceValue != null)
+                {
+                    var textHolder = _valueLabel.objectReferenceValue as RectTransform;
+                    if (textHolder.GetComponent<Text>() ||
+                        textHolder.GetComponent<TMPro.TMP_Text>())
+                    {
+                        EditorGUILayout.IntSlider(_minDigits, 1, 10);
+                    }
+                    else
+                    {
+                        _valueLabel.objectReferenceValue = null;
+                    }
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("Specify a RectTransform whith a Text or TMP_Text component for the stat bar to set the value.", MessageType.Info);
                 }
             }
         }
