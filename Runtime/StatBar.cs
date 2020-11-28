@@ -47,7 +47,7 @@ namespace Visage.StatBarUI.Runtime
         /// <summary>
         /// Setting that indicates one of four directions.
         /// </summary>
-        public enum Direction
+        public enum FillDirection
         {
             /// <summary>
             /// From the left to the right
@@ -79,27 +79,27 @@ namespace Visage.StatBarUI.Runtime
         /// <summary>
         /// Optional RectTransform to use as fill for the StatBar.
         /// </summary>
-        public RectTransform fillRect { get { return m_FillRect; } set { if (SetPropertyUtility.SetClass(ref m_FillRect, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
+        public RectTransform FillRect { get { return _fillRect; } set { if (SetPropertyUtility.SetClass(ref _fillRect, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
 
         /// <summary>
         /// The direction of the StatBar, from minimum to maximum value.
         /// </summary>
-        public Direction direction { get { return m_Direction; } set { if (SetPropertyUtility.SetStruct(ref m_Direction, value)) UpdateVisuals(); } }
+        public FillDirection Direction { get { return _direction; } set { if (SetPropertyUtility.SetStruct(ref _direction, value)) UpdateVisuals(); } }
 
         /// <summary>
         /// The minimum allowed value of the StatBar.
         /// </summary>
-        public float minValue { get { return m_MinValue; } set { if (SetPropertyUtility.SetStruct(ref m_MinValue, value)) { Set(m_Value); UpdateVisuals(); } } }
+        public float MinValue { get { return _minValue; } set { if (SetPropertyUtility.SetStruct(ref _minValue, value)) { Set(_value); UpdateVisuals(); } } }
 
         /// <summary>
         /// The maximum allowed value of the StatBar.
         /// </summary>
-        public float maxValue { get { return m_MaxValue; } set { if (SetPropertyUtility.SetStruct(ref m_MaxValue, value)) { Set(m_Value); UpdateVisuals(); } } }
+        public float MaxValue { get { return _maxValue; } set { if (SetPropertyUtility.SetStruct(ref _maxValue, value)) { Set(_value); UpdateVisuals(); } } }
 
         /// <summary>
         /// Should the value only be allowed to be whole numbers?
         /// </summary>
-        public bool wholeNumbers { get { return m_WholeNumbers; } set { if (SetPropertyUtility.SetStruct(ref m_WholeNumbers, value)) { Set(m_Value); UpdateVisuals(); } } }
+        public bool WholeNumbers { get { return _wholeNumbers; } set { if (SetPropertyUtility.SetStruct(ref _wholeNumbers, value)) { Set(_value); UpdateVisuals(); } } }
 
         /// <summary>
         /// A label showing the current value with leading zeroes set
@@ -116,24 +116,29 @@ namespace Visage.StatBarUI.Runtime
         [SerializeField] private int _leadingZeroes = 2;
         [SerializeField] private RectTransform _valueLabel;
 
-        [SerializeField] private RectTransform m_FillRect;
+        [SerializeField] private RectTransform _fillRect;
         [Space]
-        [SerializeField] private Direction m_Direction = Direction.LeftToRight;
-        [SerializeField] private float m_MinValue = 0;
-        [SerializeField] private float m_MaxValue = 1;
-        [SerializeField] private bool m_WholeNumbers = false;
-        [SerializeField] protected float m_Value;
+        [SerializeField] private FillDirection _direction = FillDirection.LeftToRight;
+        [SerializeField] private float _minValue = 0;
+        [SerializeField] private float _maxValue = 1;
+        [SerializeField] private bool _wholeNumbers = false;
+        [SerializeField] protected float _value;
+
+        public StatBar(float value)
+        {
+            _value = value;
+        }
 
         /// <summary>
         /// The current value of the StatBar.
         /// </summary>
-        public virtual float value
+        public virtual float Value
         {
             get
             {
-                if (wholeNumbers)
-                    return Mathf.Round(m_Value);
-                return m_Value;
+                if (WholeNumbers)
+                    return Mathf.Round(_value);
+                return _value;
             }
             set
             {
@@ -157,25 +162,25 @@ namespace Visage.StatBarUI.Runtime
         {
             get
             {
-                if (Mathf.Approximately(minValue, maxValue))
+                if (Mathf.Approximately(MinValue, MaxValue))
                     return 0;
-                return Mathf.InverseLerp(minValue, maxValue, value);
+                return Mathf.InverseLerp(MinValue, MaxValue, Value);
             }
             set
             {
-                this.value = Mathf.Lerp(minValue, maxValue, value);
+                this.Value = Mathf.Lerp(MinValue, MaxValue, value);
             }
         }
 
         [Space]
 
         [SerializeField]
-        private StatBarEvent m_OnValueChanged = new StatBarEvent();
+        private StatBarEvent _onValueChanged = new StatBarEvent();
 
         /// <summary>
         /// Callback executed when the value of the StatBar is changed.
         /// </summary>
-        public StatBarEvent onValueChanged { get { return m_OnValueChanged; } set { m_OnValueChanged = value; } }
+        public StatBarEvent onValueChanged { get { return _onValueChanged; } set { _onValueChanged = value; } }
 
         #region Private Fields
         private Image m_FillImage;
@@ -198,10 +203,10 @@ namespace Visage.StatBarUI.Runtime
         {
             base.OnValidate();
 
-            if (wholeNumbers)
+            if (WholeNumbers)
             {
-                m_MinValue = Mathf.Round(m_MinValue);
-                m_MaxValue = Mathf.Round(m_MaxValue);
+                _minValue = Mathf.Round(_minValue);
+                _maxValue = Mathf.Round(_maxValue);
             }
 
             //Onvalidate is called before OnEnabled. We need to make sure not to touch any other objects before OnEnable is run.
@@ -210,7 +215,7 @@ namespace Visage.StatBarUI.Runtime
                 UpdateCachedReferences();
                 // Update rects in next update since other things might affect them even if value didn't change.
                 m_DelayedUpdateVisuals = true;
-                Set(m_Value, false);
+                Set(_value, false);
             }
 
             if (!UnityEditor.PrefabUtility.IsPartOfPrefabAsset(this) && !Application.isPlaying)
@@ -223,7 +228,7 @@ namespace Visage.StatBarUI.Runtime
         {
 #if UNITY_EDITOR
             if (executing == CanvasUpdate.Prelayout)
-                onValueChanged.Invoke(value);
+                onValueChanged.Invoke(Value);
 #endif
         }
 
@@ -243,7 +248,7 @@ namespace Visage.StatBarUI.Runtime
         {
             base.OnEnable();
             UpdateCachedReferences();
-            Set(m_Value, false);
+            Set(_value, false);
             // Update rects since they need to be initialized correctly.
             UpdateVisuals();
         }
@@ -271,14 +276,14 @@ namespace Visage.StatBarUI.Runtime
         {
             // Has value changed? Various elements of the StatBar have the old normalisedValue assigned, we can use this to perform a comparison.
             // We also need to ensure the value stays within min/max.
-            m_Value = ClampValue(m_Value);
+            _value = ClampValue(_value);
             float oldNormalizedValue = normalizedValue;
             if (m_FillContainerRect != null)
             {
                 if (m_FillImage != null && m_FillImage.type == Image.Type.Filled)
                     oldNormalizedValue = m_FillImage.fillAmount;
                 else
-                    oldNormalizedValue = reverseValue ? 1 - m_FillRect.anchorMin[(int)axis] : m_FillRect.anchorMax[(int)axis];
+                    oldNormalizedValue = reverseValue ? 1 - _fillRect.anchorMin[(int)axis] : _fillRect.anchorMax[(int)axis];
             }
 
             UpdateVisuals();
@@ -286,22 +291,22 @@ namespace Visage.StatBarUI.Runtime
             if (oldNormalizedValue != normalizedValue)
             {
                 UISystemProfilerApi.AddMarker("StatBar.value", this);
-                onValueChanged.Invoke(m_Value);
+                onValueChanged.Invoke(_value);
             }
         }
 
         void UpdateCachedReferences()
         {
-            if (m_FillRect && m_FillRect != (RectTransform)transform)
+            if (_fillRect && _fillRect != (RectTransform)transform)
             {
-                m_FillTransform = m_FillRect.transform;
-                m_FillImage = m_FillRect.GetComponent<Image>();
+                m_FillTransform = _fillRect.transform;
+                m_FillImage = _fillRect.GetComponent<Image>();
                 if (m_FillTransform.parent != null)
                     m_FillContainerRect = m_FillTransform.parent.GetComponent<RectTransform>();
             }
             else
             {
-                m_FillRect = null;
+                _fillRect = null;
                 m_FillContainerRect = null;
                 m_FillImage = null;
             }
@@ -327,8 +332,8 @@ namespace Visage.StatBarUI.Runtime
 
         float ClampValue(float input)
         {
-            float newValue = Mathf.Clamp(input, minValue, maxValue);
-            if (wholeNumbers)
+            float newValue = Mathf.Clamp(input, MinValue, MaxValue);
+            if (WholeNumbers)
                 newValue = Mathf.Round(newValue);
             return newValue;
         }
@@ -347,10 +352,10 @@ namespace Visage.StatBarUI.Runtime
             float newValue = ClampValue(input);
 
             // If the stepped value doesn't match the last one, it's time to update
-            if (m_Value == newValue)
+            if (_value == newValue)
                 return;
 
-            m_Value = newValue;
+            _value = newValue;
 
             if (!m_DelayedUpdateVisuals)
             {
@@ -360,7 +365,7 @@ namespace Visage.StatBarUI.Runtime
             if (sendCallback)
             {
                 UISystemProfilerApi.AddMarker("StatBar.value", this);
-                m_OnValueChanged.Invoke(newValue);
+                _onValueChanged.Invoke(newValue);
             }
         }
 
@@ -381,8 +386,8 @@ namespace Visage.StatBarUI.Runtime
             Vertical = 1
         }
 
-        Axis axis { get { return m_Direction == Direction.LeftToRight || m_Direction == Direction.RightToLeft ? Axis.Horizontal : Axis.Vertical; } }
-        bool reverseValue { get { return m_Direction == Direction.RightToLeft || m_Direction == Direction.TopToBottom; } }
+        Axis axis { get { return _direction == FillDirection.LeftToRight || _direction == FillDirection.RightToLeft ? Axis.Horizontal : Axis.Vertical; } }
+        bool reverseValue { get { return _direction == FillDirection.RightToLeft || _direction == FillDirection.TopToBottom; } }
 
         // Force-update the statBar. Useful if you've changed the properties and want it to update visually.
         private void UpdateVisuals()
@@ -396,7 +401,7 @@ namespace Visage.StatBarUI.Runtime
 
             if (m_FillContainerRect != null)
             {
-                m_Tracker.Add(this, m_FillRect, DrivenTransformProperties.Anchors);
+                m_Tracker.Add(this, _fillRect, DrivenTransformProperties.Anchors);
                 Vector2 anchorMin = Vector2.zero;
                 Vector2 anchorMax = Vector2.one;
 
@@ -412,19 +417,19 @@ namespace Visage.StatBarUI.Runtime
                         anchorMax[(int)axis] = normalizedValue;
                 }
 
-                m_FillRect.anchorMin = anchorMin;
-                m_FillRect.anchorMax = anchorMax;
+                _fillRect.anchorMin = anchorMin;
+                _fillRect.anchorMax = anchorMax;
             }
 
             if (_valueLabel != null && _valueLabelTextCmp != null)
             {
                 if (_valueLabelTextCmp is Text labelText)
                 {
-                    labelText.text = value.ToString(!wholeNumbers ? "" : LeadingZeroesString);
+                    labelText.text = Value.ToString(!WholeNumbers ? "" : LeadingZeroesString);
                 }
                 else if (_valueLabelTextCmp is TMPro.TMP_Text labelTmpText)
                 {
-                    labelTmpText.text = value.ToString(!wholeNumbers ? "" : LeadingZeroesString);
+                    labelTmpText.text = Value.ToString(!WholeNumbers ? "" : LeadingZeroesString);
                 }
 
             }
@@ -436,11 +441,11 @@ namespace Visage.StatBarUI.Runtime
         /// </summary>
         /// <param name="direction">The direction of the StatBar</param>
         /// <param name="includeRectLayouts">Should the layout be flipped together with the StatBar direction</param>
-        public void SetDirection(Direction direction, bool includeRectLayouts)
+        public void SetDirection(FillDirection direction, bool includeRectLayouts)
         {
             Axis oldAxis = axis;
             bool oldReverse = reverseValue;
-            this.direction = direction;
+            this.Direction = direction;
 
             if (!includeRectLayouts)
                 return;

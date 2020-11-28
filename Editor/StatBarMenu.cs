@@ -35,9 +35,9 @@ namespace Visage.StatBarUI.Editor
             CreateNameLabel();
             CreateValueLabel();
 
-            statBar.fillRect = fill.GetComponent<RectTransform>();
+            statBar.FillRect = fill.GetComponent<RectTransform>();
             statBar.ValueLabel = valueLabel.GetComponent<RectTransform>();
-            statBar.value = statBar.maxValue;
+            statBar.Value = statBar.MaxValue;
 
 
             #region Locals
@@ -69,8 +69,8 @@ namespace Visage.StatBarUI.Editor
                 // Create and set the statBar size
                 statBarHolder = new GameObject("StatBar");
                 statBar = statBarHolder.AddComponent<StatBar>();
-                statBar.maxValue = INITIAL_MAX_VALUE;
-                statBar.wholeNumbers = true;
+                statBar.MaxValue = INITIAL_MAX_VALUE;
+                statBar.WholeNumbers = true;
                 var statBarRect = statBarHolder.GetComponent<RectTransform>();
                 statBarRect.sizeDelta = new Vector2(160, 20);
 
@@ -148,7 +148,7 @@ namespace Visage.StatBarUI.Editor
                 valueLabel = new GameObject("ValueLabel");
                 valueLabel.AddComponent<RectTransform>();
                 var nameText = valueLabel.AddComponent<Text>();
-                nameText.text = statBar.maxValue.ToString(statBar.LeadingZeroesString);
+                nameText.text = statBar.MaxValue.ToString(statBar.LeadingZeroesString);
                 nameText.alignment = TextAnchor.MiddleLeft;
 
                 GameObjectUtility.SetParentAndAlign(valueLabel, infoArea.gameObject);
