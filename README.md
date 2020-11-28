@@ -9,6 +9,7 @@ Create HealthBar, StatusBar and LoadingProgressBar with a few clicks.
 # Features
 * Optional Label with name and value
 * Set number of leading zeroes
+* Set color to change when value reaches a given % amount
 
 ## Prerequisites
 Unity 2018.3 and up
