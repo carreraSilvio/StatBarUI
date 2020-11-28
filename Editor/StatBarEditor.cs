@@ -20,6 +20,11 @@ namespace Visage.StatBarUI.Editor
         SerializedProperty m_Value;
         SerializedProperty m_OnValueChanged;
 
+        SerializedProperty _transition;
+        SerializedProperty _normalColorTintTransition;
+        SerializedProperty _lowColorTintTransition;
+        SerializedProperty _criticalColorTintTransition;
+
         SerializedProperty _valueLabel;
         SerializedProperty _leadingZeroes;
 
@@ -32,6 +37,11 @@ namespace Visage.StatBarUI.Editor
             m_WholeNumbers = serializedObject.FindProperty("m_WholeNumbers");
             m_Value = serializedObject.FindProperty("m_Value");
             m_OnValueChanged = serializedObject.FindProperty("m_OnValueChanged");
+
+            _transition = serializedObject.FindProperty("_transition");
+            _normalColorTintTransition = serializedObject.FindProperty("_normalColorTintTransition");
+            _lowColorTintTransition = serializedObject.FindProperty("_lowColorTintTransition");
+            _criticalColorTintTransition = serializedObject.FindProperty("_criticalColorTintTransition");
 
             _valueLabel = serializedObject.FindProperty("_valueLabel");
             _leadingZeroes = serializedObject.FindProperty("_leadingZeroes");
@@ -61,6 +71,8 @@ namespace Visage.StatBarUI.Editor
                 EditorGUILayout.PropertyField(m_MaxValue);
                 EditorGUILayout.PropertyField(m_WholeNumbers);
                 EditorGUILayout.Slider(m_Value, m_MinValue.floatValue, m_MaxValue.floatValue);
+
+                DrawTransition();
 
                 //Draw the info area
                 EditorGUILayout.Space();
@@ -94,6 +106,42 @@ namespace Visage.StatBarUI.Editor
             }
 
             serializedObject.ApplyModifiedProperties();
+
+            void DrawTransition()
+            {
+                EditorGUI.BeginChangeCheck();
+                EditorGUILayout.PropertyField(_transition);
+                StatBar.Transition transition = (StatBar.Transition)_transition.enumValueIndex;
+                if (EditorGUI.EndChangeCheck())
+                {
+                    foreach (var obj in serializedObject.targetObjects)
+                    {
+                        StatBar statBar = obj as StatBar;
+                        statBar.SetTransition(transition);
+                    }
+                }
+                if (transition == StatBar.Transition.ColorTint)
+                {
+                    EditorGUI.indentLevel++;
+
+                    DrawColorTintTransition(_normalColorTintTransition, "Normal");
+                    DrawColorTintTransition(_lowColorTintTransition, "Low");
+                    DrawColorTintTransition(_criticalColorTintTransition, "Critical");
+
+                    EditorGUI.indentLevel--;
+                }
+
+                void DrawColorTintTransition(SerializedProperty property, string labelText)
+                {
+                    var percent = property.FindPropertyRelative("percent");
+                    var color = property.FindPropertyRelative("color");
+                    EditorGUILayout.LabelField(labelText);
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(percent);
+                    EditorGUILayout.PropertyField(color);
+                    EditorGUI.indentLevel--;
+                }
+            }
         }
     }
 }

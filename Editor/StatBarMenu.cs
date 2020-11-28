@@ -74,8 +74,9 @@ namespace Visage.StatBarUI.Editor
                 var statBarRect = statBarHolder.GetComponent<RectTransform>();
                 statBarRect.sizeDelta = new Vector2(160, 20);
 
+                var targetParent = Selection.activeGameObject?? canvas.gameObject;
                 // Ensure it gets reparented if this was a context click (otherwise does nothing)
-                GameObjectUtility.SetParentAndAlign(statBarHolder, canvas.gameObject);
+                GameObjectUtility.SetParentAndAlign(statBarHolder, targetParent);
 
                 // Register the creation in the undo system
                 Undo.RegisterCreatedObjectUndo(statBarHolder, "Create " + statBarHolder.name);

@@ -12,13 +12,38 @@ namespace Visage.StatBarUI.Runtime
     /// <summary>
     /// A standard StatBar that can be moved between a minimum and maximum value.
     /// </summary>
-    /// <remarks>
-    /// The StatBar component is a Selectable that controls a fill, a handle, or both. The fill, when used, spans from the minimum value to the current value while the handle, when used, follow the current value.
-    /// The anchors of the fill and handle RectTransforms are driven by the StatBar. The fill and handle can be direct children of the GameObject with the StatBar, or intermediary RectTransforms can be placed in between for additional control.
-    /// When a change to the StatBar value occurs, a callback is sent to any registered listeners of UI.StatBar.onValueChanged.
-    /// </remarks>
     public class StatBar : UIBehaviour, ICanvasElement
     {
+        public enum Transition
+        {
+            None,
+            ColorTint
+        }
+
+        [System.Serializable]
+        public class ColorTintTransition
+        {
+            public float percent;
+            public Color color;
+        }
+
+        [SerializeField] private Transition _transition;
+        [SerializeField] private ColorTintTransition _normalColorTintTransition = new ColorTintTransition
+        {
+            percent = 95,
+            color = Color.red
+        };
+        [SerializeField] private ColorTintTransition _lowColorTintTransition = new ColorTintTransition
+        {
+            percent = 30,
+            color = new Color(0.75f, 0f, 0f)
+        };
+        [SerializeField] private ColorTintTransition _criticalColorTintTransition = new ColorTintTransition
+        {
+            percent = 10,
+            color = new Color(0.25f, 0f, 0f)
+        };
+
         /// <summary>
         /// Setting that indicates one of four directions.
         /// </summary>
@@ -425,6 +450,18 @@ namespace Visage.StatBarUI.Runtime
 
             if (reverseValue != oldReverse)
                 RectTransformUtility.FlipLayoutOnAxis(transform as RectTransform, (int)axis, true, true);
+        }
+
+        public void SetTransition(Transition transition)
+        {
+            if(transition == Transition.None)
+            {
+                m_FillImage.color = Color.red;
+            }
+            else if(transition == Transition.ColorTint)
+            {
+                m_FillImage.color = _normalColorTintTransition.color;
+            }
         }
     }
 
