@@ -2,8 +2,8 @@
 Create HealthBar, StatusBar and LoadingProgressBar with a few clicks.
 
 ![Imgur](https://i.imgur.com/SMljBnR.png)
-![Imgur](https://i.imgur.com/zGlTwHV.png)
 ![Imgur](https://i.imgur.com/MUZcyXA.gif)
+![Imgur](https://i.imgur.com/RT8shH3.gif)
 
 
 # Features
