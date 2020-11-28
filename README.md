@@ -1,6 +1,9 @@
 # Stat Bar UI 
 Create HealthBar, StatusBar and LoadingProgressBar with a few clicks.
 
+![Imgur](https://i.imgur.com/SMljBnR.png)
+![Imgur](https://i.imgur.com/zGlTwHV.png)
+
 # Features
 * Optional Label with name and value
 * Set number of leading zeroes
