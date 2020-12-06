@@ -1,6 +1,6 @@
 {
   "name": "com.visage.statbarui",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "StatBar UI",
   "description": "Create HealthBar, StatusBar and LoadingProgressBar with a few clicks.",
   "unity": "2018.2",
