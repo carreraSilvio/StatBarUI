@@ -105,7 +105,7 @@ namespace Visage.StatBarUI.Runtime
 
         public string LeadingZeroesString => _digitsVisibleString;
 
-        [SerializeField] private int _minDigits = 2;
+        [SerializeField] private int _minDigits = 1;
         [SerializeField] private RectTransform _valueLabel;
 
         [SerializeField] private RectTransform _fillRect;
