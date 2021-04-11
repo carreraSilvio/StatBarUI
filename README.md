@@ -40,7 +40,10 @@ Unity 2018.3 and up
 
 ## Usage
 
-### Play Audio Clip
 1. Righ-click the hierarquy
 2. Go in UI>Visage>StatBar
 3. Configure your bar to your needs.
+
+![Imgur](https://i.imgur.com/SMljBnR.png)
+![Imgur](https://i.imgur.com/MUZcyXA.gif)
+![Imgur](https://i.imgur.com/RT8shH3.gif)
