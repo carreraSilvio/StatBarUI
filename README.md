@@ -47,3 +47,7 @@ Unity 2018.3 and up
 ![Imgur](https://i.imgur.com/SMljBnR.png)
 ![Imgur](https://i.imgur.com/MUZcyXA.gif)
 ![Imgur](https://i.imgur.com/RT8shH3.gif)
+
+
+# Diagram
+![Visualization of this repo](./diagram.svg)
